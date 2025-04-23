@@ -11,6 +11,8 @@ public:
     void Update() override;
     const void Render() const override;
 
+    void HandleNodeHover();
+
 private:
     NodeManager m_NodeManager;
 };

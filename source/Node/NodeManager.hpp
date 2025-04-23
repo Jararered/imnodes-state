@@ -9,10 +9,12 @@ class NodeManager
 {
 private:
     // Renderables
+    // <Node ID, Node>
     std::unordered_map<uint32_t, Node> m_Nodes;
+    // <Link ID, <Input IO ID, Output IO ID>>
     std::unordered_map<uint32_t, std::pair<uint32_t, uint32_t>> m_Links;
 
-    // IDs
+    // Used IDs
     std::unordered_set<uint32_t> m_UsedNodeIds;
     std::unordered_set<uint32_t> m_UsedIOIds;
     std::unordered_set<uint32_t> m_UsedLinkIds;

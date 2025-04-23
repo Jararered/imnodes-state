@@ -5,9 +5,9 @@
 
 struct NodeIO
 {
-    uint32_t m_NodeId = 0;
-    uint32_t m_Id = 0;
-    std::string m_Name = "";
+    uint32_t NodeID = 0;
+    uint32_t ID = 0;
+    std::string Name = "";
 
-    NodeIO(uint32_t nodeId, uint32_t id, std::string name) : m_NodeId(nodeId), m_Id(id), m_Name(name) {}
+    NodeIO(uint32_t nodeId, uint32_t id, std::string name) : NodeID(nodeId), ID(id), Name(name) {}
 };

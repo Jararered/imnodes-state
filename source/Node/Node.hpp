@@ -13,5 +13,5 @@ struct Node
     std::vector<NodeIO> m_Inputs;
     std::vector<NodeIO> m_Outputs;
 
-    void Render() const;
+    void Render();
 };

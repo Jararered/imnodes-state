@@ -59,21 +59,30 @@ void NodeManager::RemoveNode(uint32_t nodeId)
     // Remove all inputs
     for (const auto &input : node.m_Inputs)
     {
-        m_UsedIOIds.erase(input.m_Id);
+        m_UsedIOIds.erase(input.ID);
+
+        // Search through links to see if and contain the input id
+        for (const auto &[linkId, inputOutput] : m_Links)
+        {
+            if (inputOutput.first == input.ID || inputOutput.second == input.ID)
+            {
+                RemoveLink(linkId);
+            }
+        }
     }
 
     // Remove all outputs
     for (const auto &output : node.m_Outputs)
     {
-        m_UsedIOIds.erase(output.m_Id);
-    }
+        m_UsedIOIds.erase(output.ID);
 
-    // Find all links that contain the node io ids and remove them
-    for (const auto &[linkId, inputOutput] : m_Links)
-    {
-        if (inputOutput.first == nodeId || inputOutput.second == nodeId)
+        // Search through links to see if and contain the output id
+        for (const auto &[linkId, inputOutput] : m_Links)
         {
-            RemoveLink(linkId);
+            if (inputOutput.first == output.ID || inputOutput.second == output.ID)
+            {
+                RemoveLink(linkId);
+            }
         }
     }
 
@@ -94,9 +103,9 @@ const void NodeManager::Render() const
         node.Render();
     }
 
-    for (const auto &[linkId, inputOutput] : m_Links)
+    for (const auto &[linkId, ioIds] : m_Links)
     {
-        ImNodes::Link(linkId, inputOutput.first, inputOutput.second);
+        ImNodes::Link(linkId, ioIds.first, ioIds.second);
     }
 }
 
@@ -104,33 +113,33 @@ const void NodeManager::RenderDetails() const
 {
     ImGui::Begin("Node Manager");
 
-    // Shows all ids
-    ImGui::Text("Node IDs: %d", m_Nodes.size());
-    ImGui::Text("IO IDs: %d", m_UsedIOIds.size());
-    ImGui::Text("Link IDs: %d", m_Links.size());
+    // Shows totals
+    ImGui::Text("Total Nodes: %d", m_Nodes.size());
+    ImGui::Text("Total IOs: %d", m_UsedIOIds.size());
+    ImGui::Text("Total Links: %d", m_Links.size());
 
     ImGui::Separator();
-    ImGui::Text("Nodes");
 
     // Shows all node ids
+    ImGui::Text("Nodes");
     for (const auto &[name, node] : m_Nodes)
     {
         ImGui::Text("Node ID: %d", node.m_Id);
     }
 
     ImGui::Separator();
-    ImGui::Text("IOs");
 
     // Shows all io ids
+    ImGui::Text("IOs");
     for (const auto &ioId : m_UsedIOIds)
     {
         ImGui::Text("IO ID: %d", ioId);
     }
 
     ImGui::Separator();
-    ImGui::Text("Links");
 
     // Shows all link ids
+    ImGui::Text("Links");
     for (const auto &[linkId, inputoutput] : m_Links)
     {
         ImGui::Text("Link ID: %d", linkId);

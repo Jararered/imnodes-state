@@ -3,7 +3,7 @@
 #include <imnodes.h>
 #include <imgui.h>
 
-void Node::Render() const
+void Node::Render()
 {
     ImNodes::BeginNode(m_Id);
 
@@ -13,15 +13,15 @@ void Node::Render() const
 
     for (const NodeIO &input : m_Inputs)
     {
-        ImNodes::BeginInputAttribute(input.m_Id);
-        ImGui::TextUnformatted(input.m_Name.c_str());
+        ImNodes::BeginInputAttribute(input.ID);
+        ImGui::TextUnformatted(input.Name.c_str());
         ImNodes::EndInputAttribute();
     }
 
     for (const NodeIO &output : m_Outputs)
     {
-        ImNodes::BeginOutputAttribute(output.m_Id);
-        ImGui::TextUnformatted(output.m_Name.c_str());
+        ImNodes::BeginOutputAttribute(output.ID);
+        ImGui::TextUnformatted(output.Name.c_str());
         ImNodes::EndOutputAttribute();
     }
 
