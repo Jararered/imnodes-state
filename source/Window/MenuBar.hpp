@@ -9,5 +9,5 @@ public:
     ~MenuBar() override = default;
 
     void Update() override {};
-    const void Render() const override;
+    void Render() override;
 };

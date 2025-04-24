@@ -8,10 +8,8 @@
 
 struct Node
 {
-    uint32_t m_Id;
-    std::string m_Name;
-    std::vector<NodeIO> m_Inputs;
-    std::vector<NodeIO> m_Outputs;
-
-    void Render();
+    uint32_t ID;
+    std::string Name;
+    std::vector<NodeIO> Inputs;
+    std::vector<NodeIO> Outputs;
 };

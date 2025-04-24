@@ -6,12 +6,17 @@
 class NodeLayer : public Layer
 {
 public:
-    NodeLayer() = default;
+    NodeLayer() : Layer("Node Editor") {}
 
     void Update() override;
-    const void Render() const override;
+    void Render() override;
 
-    void HandleNodeHover();
+    void RenderNodeEditor();
+    void RenderDetails();
+
+    void LinkEvents();
+    void LayerEvents();
+    void NodeEvents();
 
 private:
     NodeManager m_NodeManager;

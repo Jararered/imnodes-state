@@ -5,7 +5,7 @@
 
 #include <iostream>
 
-const void MenuBar::Render() const
+void MenuBar::Render()
 {
     ImGui::BeginMainMenuBar();
 

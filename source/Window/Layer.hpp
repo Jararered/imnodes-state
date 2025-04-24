@@ -10,7 +10,7 @@ public:
     virtual ~Layer() = default;
 
     virtual void Update() {};
-    virtual const void Render() const {};
+    virtual void Render() {};
 
     std::string m_Name = "Layer";
 };
