@@ -9,20 +9,19 @@
 class NodeManager
 {
 private:
-    // Renderables
-    // <Node ID, Node>
+    // Unique Node IDs
     using NodePtr = std::shared_ptr<Node>;
     using NodeMap = std::unordered_map<uint32_t, NodePtr>;
-    NodeMap m_NodeMap;
+    NodeMap m_Nodes;
 
-    // <Link ID, <Input IO ID, Output IO ID>>
-    using LinkMap = std::unordered_map<uint32_t, std::pair<uint32_t, uint32_t>>;
-    LinkMap m_LinkMap;
+    // Unique IO IDs
+    using IOSet = std::set<uint32_t>;
+    IOSet m_IOs;
 
-    // Used IDs
-    std::set<uint32_t> m_RegisteredNodes;
-    std::set<uint32_t> m_RegisteredIOs;
-    std::set<uint32_t> m_RegisteredLinks;
+    // Unique Link IDs
+    using Link = std::pair<uint32_t, uint32_t>;
+    using LinkMap = std::unordered_map<uint32_t, Link>;
+    LinkMap m_Links;
 
     // Next IDs
     uint32_t m_NextNodeId = 0;
@@ -51,9 +50,11 @@ public:
     void RenameInput(uint32_t nodeId, uint32_t inputId, const std::string &name);
     void RenameOutput(uint32_t nodeId, uint32_t outputId, const std::string &name);
 
-    NodeMap &GetNodeMap() { return m_NodeMap; }
-    LinkMap &GetLinkMap() { return m_LinkMap; }
-    std::set<uint32_t> &GetNodes() { return m_RegisteredNodes; }
-    std::set<uint32_t> &GetIOs() { return m_RegisteredIOs; }
-    std::set<uint32_t> &GetLinks() { return m_RegisteredLinks; }
+    NodeMap &GetNodeMap() { return m_Nodes; }
+    IOSet &GetIOs() { return m_IOs; }
+    LinkMap &GetLinkMap() { return m_Links; }
+
+    bool NodeExists(uint32_t nodeId);
+    bool IOExists(uint32_t ioId);
+    bool LinkExists(uint32_t linkId);
 };

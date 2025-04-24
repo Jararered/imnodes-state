@@ -200,12 +200,15 @@ void NodeLayer::NodeEvents()
         }
     }
 
-    int selectedNodeId;
-    ImNodes::GetSelectedNodes(&selectedNodeId);
-
     // Show Context Menu
     if (ImGui::BeginPopupContextWindow("NodeContextMenu"))
     {
+        int selectedNodeId;
+        ImNodes::GetSelectedNodes(&selectedNodeId);
+
+        bool hasInputs = m_NodeManager.GetNodeMap()[selectedNodeId]->Inputs.size() > 0;
+        bool hasOutputs = m_NodeManager.GetNodeMap()[selectedNodeId]->Outputs.size() > 0;
+
         if (ImGui::MenuItem("Add Input"))
         {
             m_NodeManager.AddInput(selectedNodeId);
@@ -217,13 +220,13 @@ void NodeLayer::NodeEvents()
         }
 
         // Add separator if there are inputs or outputs
-        if (m_NodeManager.GetNodeMap()[selectedNodeId]->Inputs.size() > 0 || m_NodeManager.GetNodeMap()[selectedNodeId]->Outputs.size() > 0)
+        if (hasInputs || hasOutputs)
         {
             ImGui::Separator();
         }
 
         // Submenu for removing inputs and outputs
-        if (m_NodeManager.GetNodeMap()[selectedNodeId]->Inputs.size() > 0)
+        if (hasInputs)
         {
             if (ImGui::BeginMenu("Inputs"))
             {
@@ -249,7 +252,7 @@ void NodeLayer::NodeEvents()
             }
         }
 
-        if (m_NodeManager.GetNodeMap()[selectedNodeId]->Outputs.size() > 0)
+        if (hasOutputs)
         {
             if (ImGui::BeginMenu("Outputs"))
             {
@@ -273,6 +276,13 @@ void NodeLayer::NodeEvents()
                 }
                 ImGui::EndMenu();
             }
+        }
+
+        ImGui::Separator();
+
+        if (ImGui::MenuItem("Delete"))
+        {
+            m_NodeManager.RemoveNode(selectedNodeId);
         }
 
         ImGui::EndPopup();
