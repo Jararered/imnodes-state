@@ -21,14 +21,7 @@ void NodeLayer::Render()
 
 void NodeLayer::RenderNodeEditor()
 {
-    ImGuiViewport *viewport = ImGui::GetMainViewport();
-    ImGui::SetNextWindowPos(viewport->WorkPos);
-    ImGui::SetNextWindowSize(viewport->WorkSize);
-    ImGui::SetNextWindowViewport(viewport->ID);
-    ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 0.0f);
-    ImGuiWindowFlags window_flags = ImGuiWindowFlags_NoDecoration;
-
-    ImGui::Begin(m_Name.c_str(), nullptr, window_flags);
+    ImGui::Begin(m_Name.c_str());
     ImNodes::BeginNodeEditor();
 
     for (const auto &[id, node] : m_NodeManager.GetNodeMap())
@@ -70,7 +63,6 @@ void NodeLayer::RenderNodeEditor()
 
     ImNodes::EndNodeEditor();
     ImGui::End();
-    ImGui::PopStyleVar();
 }
 
 void NodeLayer::RenderDetails()

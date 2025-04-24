@@ -90,11 +90,23 @@ void Window::NewFrame()
 
 void Window::Render()
 {
+    ImGuiViewport *viewport = ImGui::GetMainViewport();
+    ImGui::SetNextWindowPos(viewport->WorkPos);
+    ImGui::SetNextWindowSize(viewport->WorkSize);
+    ImGui::SetNextWindowViewport(viewport->ID);
+    ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 0.0f);
+    ImGuiWindowFlags window_flags = ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoMove;
+
+    ImGui::Begin("Main Window", nullptr, window_flags);
+
     for (const auto &[name, layer] : m_Layers)
     {
         layer->Update();
         layer->Render();
     }
+
+    ImGui::End();
+    ImGui::PopStyleVar();
 }
 
 void Window::EndFrame()
