@@ -25,7 +25,7 @@ void NodeLayer::RenderNodeEditor()
 
     ImNodes::BeginNodeEditor();
 
-    for (auto &[id, node] : m_NodeManager.GetNodeMap())
+    for (const auto &[id, node] : m_NodeManager.GetNodeMap())
     {
         ImNodes::BeginNode(node->ID);
 
@@ -33,24 +33,25 @@ void NodeLayer::RenderNodeEditor()
         ImGui::TextUnformatted(node->Name.c_str());
         ImNodes::EndNodeTitleBar();
 
-        if (node->Inputs.size() > 0)
+        // Dummy for unique identifier
+        // This is required as ImGui does not use the titlebar as a unique identifier
+        if (node->Inputs.size() == 0 && node->Outputs.size() == 0)
         {
-            for (const NodeIO &input : node->Inputs)
-            {
-                ImNodes::BeginInputAttribute(input.ID);
-                ImGui::TextUnformatted(input.Name.c_str());
-                ImNodes::EndInputAttribute();
-            }
+            ImGui::Dummy(ImVec2(0, 0));
         }
 
-        if (node->Outputs.size() > 0)
+        for (const NodeIO &input : node->Inputs)
         {
-            for (const NodeIO &output : node->Outputs)
-            {
-                ImNodes::BeginOutputAttribute(output.ID);
-                ImGui::TextUnformatted(output.Name.c_str());
-                ImNodes::EndOutputAttribute();
-            }
+            ImNodes::BeginInputAttribute(input.ID);
+            ImGui::TextUnformatted(input.Name.c_str());
+            ImNodes::EndInputAttribute();
+        }
+
+        for (const NodeIO &output : node->Outputs)
+        {
+            ImNodes::BeginOutputAttribute(output.ID);
+            ImGui::TextUnformatted(output.Name.c_str());
+            ImNodes::EndOutputAttribute();
         }
 
         ImNodes::EndNode();
@@ -72,7 +73,7 @@ void NodeLayer::RenderDetails()
 
     // Shows totals
     ImGui::Text("Total Nodes: %d", m_NodeManager.GetNodeMap().size());
-    ImGui::Text("Total IOs: %d", m_NodeManager.GetUsedIOIds().size());
+    ImGui::Text("Total IOs: %d", m_NodeManager.GetIOs().size());
     ImGui::Text("Total Links: %d", m_NodeManager.GetLinkMap().size());
 
     ImGui::Separator();
@@ -88,7 +89,7 @@ void NodeLayer::RenderDetails()
 
     // Shows all io ids
     ImGui::Text("IOs");
-    for (auto &ioId : m_NodeManager.GetUsedIOIds())
+    for (auto &ioId : m_NodeManager.GetIOs())
     {
         ImGui::Text("IO ID: %d", ioId);
     }
@@ -193,23 +194,57 @@ void NodeLayer::LayerEvents()
 
 void NodeLayer::NodeEvents()
 {
-    // Node Right Click
+    // Node Right Click - Show Context Menu
     if (ImGui::IsMouseClicked(ImGuiMouseButton_Right))
     {
-        // Get the selected node id
+        // Make sure only one node is selected
+        if (ImNodes::NumSelectedNodes() == 1)
+        {
+            std::cout << "Open Node Context Menu" << std::endl;
+            ImGui::OpenPopup("NodeContextMenu");
+        }
+    }
+
+    // Show Context Menu
+    if (ImGui::BeginPopupContextWindow("NodeContextMenu"))
+    {
         int selectedNodeId;
         ImNodes::GetSelectedNodes(&selectedNodeId);
 
-        if (selectedNodeId != -1)
+        if (ImGui::MenuItem("Add Input"))
         {
-            if (ImGui::BeginPopupContextItem("NodeContextMenu"))
+            std::cout << "Add Input" << std::endl;
+            m_NodeManager.AddInput(selectedNodeId, "New Input");
+        }
+        if (ImGui::MenuItem("Add Output"))
+        {
+            std::cout << "Add Output" << std::endl;
+            m_NodeManager.AddOutput(selectedNodeId, "New Output");
+        }
+
+        // Submenu for removing inputs and outputs
+        if (ImGui::BeginMenu("Inputs"))
+        {
+            // Loop over inputs to remove and add as menu items
+            for (const NodeIO &input : m_NodeManager.GetNodeMap()[selectedNodeId]->Inputs)
             {
-                ImGui::Text("Node Context Menu");
-                if (ImGui::MenuItem("Add Input"))
+                if (ImGui::BeginMenu(input.Name.c_str()))
                 {
-                    m_NodeManager.AddInput(selectedNodeId, "New Input");
+                    // Rename
+                    if (ImGui::MenuItem("Rename"))
+                    {
+                    }
+
+                    // Remove
+                    if (ImGui::MenuItem("Remove"))
+                    {
+                        m_NodeManager.RemoveInput(selectedNodeId, input.ID);
+                    }
+                    ImGui::EndMenu();
                 }
             }
+            ImGui::EndMenu();
         }
+        ImGui::EndPopup();
     }
 }

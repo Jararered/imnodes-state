@@ -3,7 +3,7 @@
 #include "Node.hpp"
 
 #include <unordered_map>
-#include <unordered_set>
+#include <set>
 #include <memory>
 
 class NodeManager
@@ -20,9 +20,9 @@ private:
     LinkMap m_LinkMap;
 
     // Used IDs
-    std::unordered_set<uint32_t> m_UsedNodeIds;
-    std::unordered_set<uint32_t> m_UsedIOIds;
-    std::unordered_set<uint32_t> m_UsedLinkIds;
+    std::set<uint32_t> m_RegisteredNodes;
+    std::set<uint32_t> m_RegisteredIOs;
+    std::set<uint32_t> m_RegisteredLinks;
 
     // Next IDs
     uint32_t m_NextNodeId = 0;
@@ -32,18 +32,25 @@ private:
 public:
     NodeManager();
 
+    // Node Management
     uint32_t CreateNode(const std::string &name);
-    uint32_t CreateLink(uint32_t inputId, uint32_t outputId);
-
     void RemoveNode(uint32_t nodeId);
+
+    // Link Management
+    uint32_t CreateLink(uint32_t inputId, uint32_t outputId);
     void RemoveLink(uint32_t linkId);
 
+    // IO Management
     uint32_t AddInput(uint32_t nodeId, const std::string &name);
     uint32_t AddOutput(uint32_t nodeId, const std::string &name);
+    void RemoveInput(uint32_t nodeId, uint32_t inputId);
+    void RemoveOutput(uint32_t nodeId, uint32_t outputId);
+    void RenameInput(uint32_t nodeId, uint32_t inputId, const std::string &name);
+    void RenameOutput(uint32_t nodeId, uint32_t outputId, const std::string &name);
 
     NodeMap &GetNodeMap() { return m_NodeMap; }
     LinkMap &GetLinkMap() { return m_LinkMap; }
-    std::unordered_set<uint32_t> &GetUsedNodeIds() { return m_UsedNodeIds; }
-    std::unordered_set<uint32_t> &GetUsedIOIds() { return m_UsedIOIds; }
-    std::unordered_set<uint32_t> &GetUsedLinkIds() { return m_UsedLinkIds; }
+    std::set<uint32_t> &GetNodes() { return m_RegisteredNodes; }
+    std::set<uint32_t> &GetIOs() { return m_RegisteredIOs; }
+    std::set<uint32_t> &GetLinks() { return m_RegisteredLinks; }
 };
