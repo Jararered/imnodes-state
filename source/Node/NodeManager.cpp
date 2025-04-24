@@ -9,6 +9,12 @@ NodeManager::NodeManager()
 {
 }
 
+uint32_t NodeManager::CreateNode()
+{
+    std::string name = "Node (ID " + std::to_string(m_NextNodeId) + ")";
+    return CreateNode(name);
+}
+
 uint32_t NodeManager::CreateNode(const std::string &name)
 {
     // Create Node
@@ -21,83 +27,6 @@ uint32_t NodeManager::CreateNode(const std::string &name)
 
     // Add to map
     return node->ID;
-}
-
-uint32_t NodeManager::AddInput(uint32_t nodeId, const std::string &name)
-{
-    NodeIO input = NodeIO(nodeId, m_NextIOId, name);
-    m_NodeMap[nodeId]->Inputs.push_back(input);
-    m_RegisteredIOs.insert(m_NextIOId);
-    m_NextIOId++;
-    return m_NextIOId - 1;
-}
-
-uint32_t NodeManager::AddOutput(uint32_t nodeId, const std::string &name)
-{
-    NodeIO output = NodeIO(nodeId, m_NextIOId, name);
-    m_NodeMap[nodeId]->Outputs.push_back(output);
-    m_RegisteredIOs.insert(m_NextIOId);
-    m_NextIOId++;
-    return m_NextIOId - 1;
-}
-
-void NodeManager::RemoveInput(uint32_t nodeId, uint32_t inputId)
-{
-    NodePtr node = m_NodeMap[nodeId];
-
-    // Search through links for the input id
-    for (auto &[linkId, inputOutput] : m_LinkMap)
-    {
-        if (inputOutput.first == inputId)
-        {
-            RemoveLink(linkId);
-        }
-    }
-}
-
-void NodeManager::RemoveOutput(uint32_t nodeId, uint32_t outputId)
-{
-    NodePtr node = m_NodeMap[nodeId];
-
-    // Search through links for the output id
-    for (auto &[linkId, inputOutput] : m_LinkMap)
-    {
-        if (inputOutput.second == outputId)
-        {
-            RemoveLink(linkId);
-        }
-    }
-}
-
-void NodeManager::RenameInput(uint32_t nodeId, uint32_t inputId, const std::string &name)
-{
-    NodePtr node = m_NodeMap[nodeId];
-    for (auto &input : node->Inputs)
-    {
-        if (input.ID == inputId)
-        {
-            input.Name = name;
-        }
-    }
-}
-
-void NodeManager::RenameOutput(uint32_t nodeId, uint32_t outputId, const std::string &name)
-{
-    NodePtr node = m_NodeMap[nodeId];
-    assert(node != nullptr);
-    for (auto &output : node->Outputs)
-    {
-        if (output.ID == outputId)
-        {
-            output.Name = name;
-        }
-    }
-}
-
-uint32_t NodeManager::CreateLink(uint32_t inputId, uint32_t outputId)
-{
-    m_LinkMap[m_NextLinkId++] = std::make_pair(inputId, outputId);
-    return m_NextLinkId - 1;
 }
 
 void NodeManager::RemoveNode(uint32_t nodeId)
@@ -136,6 +65,103 @@ void NodeManager::RemoveNode(uint32_t nodeId)
 
     m_NodeMap.erase(nodeId);
     m_RegisteredNodes.erase(nodeId);
+}
+
+uint32_t NodeManager::AddInput(uint32_t nodeId)
+{
+    std::string name = "Input (ID " + std::to_string(m_NextIOId) + ")";
+    NodeIO input = NodeIO(nodeId, m_NextIOId, name);
+    m_NodeMap[nodeId]->Inputs.push_back(input);
+    m_RegisteredIOs.insert(m_NextIOId);
+    m_NextIOId++;
+    return m_NextIOId - 1;
+}
+
+uint32_t NodeManager::AddInput(uint32_t nodeId, const std::string &name)
+{
+    NodeIO input = NodeIO(nodeId, m_NextIOId, name);
+    m_NodeMap[nodeId]->Inputs.push_back(input);
+    m_RegisteredIOs.insert(m_NextIOId);
+    m_NextIOId++;
+    return m_NextIOId - 1;
+}
+
+void NodeManager::RenameInput(uint32_t nodeId, uint32_t inputId, const std::string &name)
+{
+    NodePtr node = m_NodeMap[nodeId];
+    for (auto &input : node->Inputs)
+    {
+        if (input.ID == inputId)
+        {
+            input.Name = name;
+        }
+    }
+}
+
+void NodeManager::RemoveInput(uint32_t nodeId, uint32_t inputId)
+{
+    NodePtr node = m_NodeMap[nodeId];
+
+    // Search through links for the input id
+    for (auto &[linkId, inputOutput] : m_LinkMap)
+    {
+        if (inputOutput.first == inputId)
+        {
+            RemoveLink(linkId);
+        }
+    }
+}
+
+uint32_t NodeManager::AddOutput(uint32_t nodeId)
+{
+    std::string name = "Output (ID " + std::to_string(m_NextIOId) + ")";
+    NodeIO output = NodeIO(nodeId, m_NextIOId, name);
+    m_NodeMap[nodeId]->Outputs.push_back(output);
+    m_RegisteredIOs.insert(m_NextIOId);
+    m_NextIOId++;
+    return m_NextIOId - 1;
+}
+
+uint32_t NodeManager::AddOutput(uint32_t nodeId, const std::string &name)
+{
+    NodeIO output = NodeIO(nodeId, m_NextIOId, name);
+    m_NodeMap[nodeId]->Outputs.push_back(output);
+    m_RegisteredIOs.insert(m_NextIOId);
+    m_NextIOId++;
+    return m_NextIOId - 1;
+}
+
+void NodeManager::RenameOutput(uint32_t nodeId, uint32_t outputId, const std::string &name)
+{
+    NodePtr node = m_NodeMap[nodeId];
+    assert(node != nullptr);
+    for (auto &output : node->Outputs)
+    {
+        if (output.ID == outputId)
+        {
+            output.Name = name;
+        }
+    }
+}
+
+void NodeManager::RemoveOutput(uint32_t nodeId, uint32_t outputId)
+{
+    NodePtr node = m_NodeMap[nodeId];
+
+    // Search through links for the output id
+    for (auto &[linkId, inputOutput] : m_LinkMap)
+    {
+        if (inputOutput.second == outputId)
+        {
+            RemoveLink(linkId);
+        }
+    }
+}
+
+uint32_t NodeManager::CreateLink(uint32_t inputId, uint32_t outputId)
+{
+    m_LinkMap[m_NextLinkId++] = std::make_pair(inputId, outputId);
+    return m_NextLinkId - 1;
 }
 
 void NodeManager::RemoveLink(uint32_t linkId)

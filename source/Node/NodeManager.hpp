@@ -33,6 +33,7 @@ public:
     NodeManager();
 
     // Node Management
+    uint32_t CreateNode();
     uint32_t CreateNode(const std::string &name);
     void RemoveNode(uint32_t nodeId);
 
@@ -41,7 +42,9 @@ public:
     void RemoveLink(uint32_t linkId);
 
     // IO Management
+    uint32_t AddInput(uint32_t nodeId);
     uint32_t AddInput(uint32_t nodeId, const std::string &name);
+    uint32_t AddOutput(uint32_t nodeId);
     uint32_t AddOutput(uint32_t nodeId, const std::string &name);
     void RemoveInput(uint32_t nodeId, uint32_t inputId);
     void RemoveOutput(uint32_t nodeId, uint32_t outputId);

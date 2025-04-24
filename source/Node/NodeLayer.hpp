@@ -6,7 +6,7 @@
 class NodeLayer : public Layer
 {
 public:
-    NodeLayer() : Layer("Node Editor") {}
+    NodeLayer() : Layer("New Node Editor") {}
 
     void Update() override;
     void Render() override;

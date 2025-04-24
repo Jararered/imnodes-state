@@ -21,8 +21,14 @@ void NodeLayer::Render()
 
 void NodeLayer::RenderNodeEditor()
 {
-    ImGui::Begin("Node Editor");
+    ImGuiViewport *viewport = ImGui::GetMainViewport();
+    ImGui::SetNextWindowPos(viewport->WorkPos);
+    ImGui::SetNextWindowSize(viewport->WorkSize);
+    ImGui::SetNextWindowViewport(viewport->ID);
+    ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 0.0f);
+    ImGuiWindowFlags window_flags = ImGuiWindowFlags_NoDecoration;
 
+    ImGui::Begin(m_Name.c_str(), nullptr, window_flags);
     ImNodes::BeginNodeEditor();
 
     for (const auto &[id, node] : m_NodeManager.GetNodeMap())
@@ -63,8 +69,8 @@ void NodeLayer::RenderNodeEditor()
     }
 
     ImNodes::EndNodeEditor();
-
     ImGui::End();
+    ImGui::PopStyleVar();
 }
 
 void NodeLayer::RenderDetails()
@@ -175,7 +181,6 @@ void NodeLayer::LayerEvents()
         // Make sure no nodes are hovered
         if (ImNodes::GetCurrentContext()->HoveredNodeIdx.HasValue() == false)
         {
-            std::cout << "Open Layer Context Menu" << std::endl;
             ImGui::OpenPopup("LayerContextMenu");
         }
     }
@@ -185,8 +190,7 @@ void NodeLayer::LayerEvents()
     {
         if (ImGui::MenuItem("Add Node"))
         {
-            std::cout << "Add Node" << std::endl;
-            m_NodeManager.CreateNode("New Node");
+            m_NodeManager.CreateNode();
         }
         ImGui::EndPopup();
     }
@@ -200,51 +204,85 @@ void NodeLayer::NodeEvents()
         // Make sure only one node is selected
         if (ImNodes::NumSelectedNodes() == 1)
         {
-            std::cout << "Open Node Context Menu" << std::endl;
             ImGui::OpenPopup("NodeContextMenu");
         }
     }
 
+    int selectedNodeId;
+    ImNodes::GetSelectedNodes(&selectedNodeId);
+
     // Show Context Menu
     if (ImGui::BeginPopupContextWindow("NodeContextMenu"))
     {
-        int selectedNodeId;
-        ImNodes::GetSelectedNodes(&selectedNodeId);
-
         if (ImGui::MenuItem("Add Input"))
         {
-            std::cout << "Add Input" << std::endl;
-            m_NodeManager.AddInput(selectedNodeId, "New Input");
+            m_NodeManager.AddInput(selectedNodeId);
         }
+
         if (ImGui::MenuItem("Add Output"))
         {
-            std::cout << "Add Output" << std::endl;
-            m_NodeManager.AddOutput(selectedNodeId, "New Output");
+            m_NodeManager.AddOutput(selectedNodeId);
+        }
+
+        // Add separator if there are inputs or outputs
+        if (m_NodeManager.GetNodeMap()[selectedNodeId]->Inputs.size() > 0 || m_NodeManager.GetNodeMap()[selectedNodeId]->Outputs.size() > 0)
+        {
+            ImGui::Separator();
         }
 
         // Submenu for removing inputs and outputs
-        if (ImGui::BeginMenu("Inputs"))
+        if (m_NodeManager.GetNodeMap()[selectedNodeId]->Inputs.size() > 0)
         {
-            // Loop over inputs to remove and add as menu items
-            for (const NodeIO &input : m_NodeManager.GetNodeMap()[selectedNodeId]->Inputs)
+            if (ImGui::BeginMenu("Inputs"))
             {
-                if (ImGui::BeginMenu(input.Name.c_str()))
+                // Loop over inputs to remove and add as menu items
+                for (const auto &input : m_NodeManager.GetNodeMap()[selectedNodeId]->Inputs)
                 {
-                    // Rename
-                    if (ImGui::MenuItem("Rename"))
+                    if (ImGui::BeginMenu(input.Name.c_str()))
                     {
-                    }
+                        // TODO - Add input to rename
+                        // if (ImGui::MenuItem("Rename"))
+                        // {
+                        //     m_NodeManager.RenameInput(selectedNodeId, input.ID, "New Name");
+                        // }
 
-                    // Remove
-                    if (ImGui::MenuItem("Remove"))
-                    {
-                        m_NodeManager.RemoveInput(selectedNodeId, input.ID);
+                        if (ImGui::MenuItem("Remove"))
+                        {
+                            m_NodeManager.RemoveInput(selectedNodeId, input.ID);
+                        }
+                        ImGui::EndMenu();
                     }
-                    ImGui::EndMenu();
                 }
+                ImGui::EndMenu();
             }
-            ImGui::EndMenu();
         }
+
+        if (m_NodeManager.GetNodeMap()[selectedNodeId]->Outputs.size() > 0)
+        {
+            if (ImGui::BeginMenu("Outputs"))
+            {
+                // Loop over outputs to remove and add as menu items
+                for (const auto &output : m_NodeManager.GetNodeMap()[selectedNodeId]->Outputs)
+                {
+                    if (ImGui::BeginMenu(output.Name.c_str()))
+                    {
+                        // TODO - Add output to rename
+                        // if (ImGui::MenuItem("Rename"))
+                        // {
+                        //     m_NodeManager.RenameOutput(selectedNodeId, output.ID, "New Name");
+                        // }
+
+                        if (ImGui::MenuItem("Remove"))
+                        {
+                            m_NodeManager.RemoveOutput(selectedNodeId, output.ID);
+                        }
+                        ImGui::EndMenu();
+                    }
+                }
+                ImGui::EndMenu();
+            }
+        }
+
         ImGui::EndPopup();
     }
 }
