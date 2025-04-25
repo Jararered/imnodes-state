@@ -3,31 +3,19 @@
 #include "Node.hpp"
 
 #include <unordered_map>
+#include <unordered_set>
 #include <set>
 #include <memory>
 
+using NodePtr = std::shared_ptr<Node>;
+using NodeSet = std::unordered_set<NodePtr>;
+using NodeMap = std::unordered_map<uint32_t, NodePtr>;
+using IOSet = std::set<uint32_t>;
+using Link = std::pair<uint32_t, uint32_t>;
+using LinkMap = std::unordered_map<uint32_t, Link>;
+
 class NodeManager
 {
-private:
-    // Unique Node IDs
-    using NodePtr = std::shared_ptr<Node>;
-    using NodeMap = std::unordered_map<uint32_t, NodePtr>;
-    NodeMap m_Nodes;
-
-    // Unique IO IDs
-    using IOSet = std::set<uint32_t>;
-    IOSet m_IOs;
-
-    // Unique Link IDs
-    using Link = std::pair<uint32_t, uint32_t>;
-    using LinkMap = std::unordered_map<uint32_t, Link>;
-    LinkMap m_Links;
-
-    // Next IDs
-    uint32_t m_NextNodeId = 0;
-    uint32_t m_NextIOId = 0;
-    uint32_t m_NextLinkId = 0;
-
 public:
     NodeManager();
 
@@ -57,4 +45,21 @@ public:
     bool NodeExists(uint32_t nodeId);
     bool IOExists(uint32_t ioId);
     bool LinkExists(uint32_t linkId);
+
+private:
+    // Unique Node IDs
+    NodeMap m_Nodes;
+    NodeSet m_NodesToAdd;
+    NodeSet m_NodesToDelete;
+
+    // Unique IO IDs
+    IOSet m_IOs;
+
+    // Unique Link IDs
+    LinkMap m_Links;
+
+    // Next IDs
+    uint32_t m_NextNodeId = 0;
+    uint32_t m_NextIOId = 0;
+    uint32_t m_NextLinkId = 0;
 };
