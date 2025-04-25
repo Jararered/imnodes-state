@@ -33,4 +33,4 @@ Due to the way GLAD generates it's files, building the project once is currently
 ```bash
 cmake --build ./build --config Debug --target all --
 ```
-![Node Editor Screenshot](https://i.imgur.com/Hs2Iqxz.png)
+![Node Editor Screenshot](https://i.imgur.com/ea6joWf.png)
