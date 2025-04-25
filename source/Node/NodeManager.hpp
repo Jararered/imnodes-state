@@ -92,9 +92,9 @@ private:
     void RenderState();
 
 private:
-    uint32_t m_NextNodeID;
-    uint32_t m_NextPinID;
-    uint32_t m_NextLinkID;
+    uint32_t m_NextNodeID = 0;
+    uint32_t m_NextPinID = 0;
+    uint32_t m_NextLinkID = 0;
 
     NodeDataMap m_NodeDataMap;
     PinDataMap m_PinDataMap;
