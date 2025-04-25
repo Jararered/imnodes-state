@@ -1,12 +1,12 @@
 #include <Window/Window.hpp>
 #include <Window/MenuBar.hpp>
 
-#include <Node/NodeLayer.hpp>
+#include <Node/NodeEditor.hpp>
 
 int main(void)
 {
     WindowParameters parameters;
-    parameters.Title = "Node Simulation";
+    parameters.Title = "Node Editor";
     parameters.Width = 1280;
     parameters.Height = 720;
     parameters.VSync = true;
@@ -15,7 +15,7 @@ int main(void)
     window.Initialize();
 
     window.AddLayer(std::make_shared<MenuBar>());
-    window.AddLayer(std::make_shared<NodeLayer>());
+    window.AddLayer(std::make_shared<NodeEditor>());
     
     while (!window.ShouldClose())
     {

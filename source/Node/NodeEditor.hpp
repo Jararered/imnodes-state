@@ -5,11 +5,11 @@
 
 #include <unordered_set>
 
-class NodeLayer : public Layer
+class NodeEditor : public Layer
 {
 public:
-    NodeLayer() : Layer("New Node Editor") {}
-    ~NodeLayer() override {}
+    NodeEditor() : Layer("New Node Editor") {}
+    ~NodeEditor() override {}
 
     void Update() override;
     void Render() override;
