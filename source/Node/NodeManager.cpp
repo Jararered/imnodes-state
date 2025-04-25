@@ -100,7 +100,7 @@ void NodeManager::CreatePin(uint32_t nodeId, PinType pinType)
     m_PinsToRegister.push(pinId);
 
     std::cout << "[NodeManager] Adding pin id " << pinId << " data to pin data map" << std::endl;
-    m_PinDataMap[pinId] = PinData{nodeId, pinType, name};
+    m_PinDataMap[pinId] = PinData{name, nodeId, pinType};
 }
 
 void NodeManager::RemoveNode(uint32_t nodeId)
@@ -200,7 +200,7 @@ void NodeManager::CreatePin(uint32_t nodeId, PinType pinType, const std::string 
     m_PinsToRegister.push(pinId);
 
     std::cout << "[NodeManager] Adding pin id " << pinId << " data to pin data map" << std::endl;
-    m_PinDataMap[pinId] = PinData{nodeId, pinType, name};
+    m_PinDataMap[pinId] = PinData{name, nodeId, pinType};
 }
 
 const NodeIDSet &NodeManager::GetRegisteredNodes() const
