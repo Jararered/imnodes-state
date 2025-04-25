@@ -1,4 +1,4 @@
-# Node Simulation
+# Node Editor
 
 ## What
 
