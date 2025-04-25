@@ -112,42 +112,6 @@ void NodeLayer::LinkEvents()
         m_NodeManager.CreateLink(inputId, outputId);
     }
 
-    // Handle link deletion if middle mouse button is clicked while hovering over a link
-    int linkIdHovered;
-    if (ImNodes::IsLinkHovered(&linkIdHovered))
-    {
-        if (ImGui::IsMouseClicked(ImGuiMouseButton_Middle))
-        {
-            m_NodeManager.RemoveLink(linkIdHovered);
-        }
-    }
-
-    int nodeIdHovered;
-    if (ImNodes::IsNodeHovered(&nodeIdHovered))
-    {
-        // Delete node if middle mouse button is clicked while hovering over a node
-        if (ImGui::IsMouseClicked(ImGuiMouseButton_Middle))
-        {
-            m_NodeManager.RemoveNode(nodeIdHovered);
-        }
-    }
-
-    // Handle node deletion if delete key is pressed while more than one node is selected
-    uint32_t numNodesSelected = ImNodes::NumSelectedNodes();
-    int selectedNodeIds[numNodesSelected];
-    ImNodes::GetSelectedNodes(selectedNodeIds);
-    if (numNodesSelected > 0)
-    {
-        // Handle delete key press
-        if (ImGui::IsKeyPressed(ImGuiKey_Delete))
-        {
-            for (uint32_t i = 0; i < numNodesSelected; i++)
-            {
-                m_NodeManager.RemoveNode(selectedNodeIds[i]);
-            }
-        }
-    }
-
     // Handle link deletion if delete key is pressed while more than one link is selected
     uint32_t numLinksSelected = ImNodes::NumSelectedLinks();
     int selectedLinkIds[numLinksSelected];
@@ -205,6 +169,16 @@ void NodeLayer::NodeEvents()
     {
         int selectedNodeId;
         ImNodes::GetSelectedNodes(&selectedNodeId);
+
+        // Ensure the node selected by ImNodes still exists in our manager
+        if (!m_NodeManager.NodeExists(selectedNodeId))
+        {
+            // Node was likely deleted earlier this frame (e.g., by middle mouse click)
+            // Close the popup and skip the rest of the menu logic
+            ImGui::CloseCurrentPopup();
+            ImGui::EndPopup();
+            return; 
+        }
 
         bool hasInputs = m_NodeManager.GetNodeMap()[selectedNodeId]->Inputs.size() > 0;
         bool hasOutputs = m_NodeManager.GetNodeMap()[selectedNodeId]->Outputs.size() > 0;
