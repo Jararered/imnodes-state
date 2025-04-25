@@ -1,5 +1,9 @@
 #include "NodeManager.hpp"
 
+#include <imgui.h>
+
+#include <iostream>
+
 void NodeManager::Render()
 {
     RenderState();
