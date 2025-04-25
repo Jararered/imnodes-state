@@ -10,13 +10,13 @@ NodeManager::NodeManager()
 {
 }
 
-uint32_t NodeManager::CreateNode()
+void NodeManager::CreateNode()
 {
     std::string name = "Node (ID " + std::to_string(m_NextNodeId) + ")";
-    return CreateNode(name);
+    CreateNode(name);
 }
 
-uint32_t NodeManager::CreateNode(const std::string &name)
+void NodeManager::CreateNode(const std::string &name)
 {
     // Create Node
     NodePtr node = std::make_shared<Node>();
@@ -26,9 +26,6 @@ uint32_t NodeManager::CreateNode(const std::string &name)
     // Add to map
     m_Nodes[node->ID] = node;
     std::cout << "Created node " << node->ID << std::endl;
-
-    // Add to map
-    return node->ID;
 }
 
 void NodeManager::RemoveNode(uint32_t nodeId)

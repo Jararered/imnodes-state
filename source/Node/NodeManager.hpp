@@ -20,8 +20,8 @@ public:
     NodeManager();
 
     // Node Management
-    uint32_t CreateNode();
-    uint32_t CreateNode(const std::string &name);
+    void CreateNode();
+    void CreateNode(const std::string &name);
     void RemoveNode(uint32_t nodeId);
 
     // Link Management
