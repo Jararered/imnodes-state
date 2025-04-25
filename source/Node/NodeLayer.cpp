@@ -296,8 +296,6 @@ void NodeLayer::RenderState()
     }
     ImGui::Text(selectedNodesString.c_str());
 
-    ImGui::Separator();
-
     // Selected Links
     std::string selectedLinksString = "Selected Link IDs: ";
     it = m_SelectedLinks.begin();
