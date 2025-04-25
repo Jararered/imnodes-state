@@ -14,6 +14,34 @@ void NodeManager::Update()
     ProcessQueues();
 }
 
+void NodeManager::RenderState()
+{
+    ImGui::Begin("Node Manager State");
+    ImGui::Text("Registered Nodes: %d", m_RegisteredNodes.size());
+    ImGui::Text("Registered Pins: %d", m_RegisteredPins.size());
+    ImGui::Text("Registered Links: %d", m_RegisteredLinks.size());
+
+    ImGui::Separator();
+
+    // Node Data
+    ImGui::Text("Node Data");
+    for (const auto &node : m_NodeDataMap)
+    {
+        ImGui::Text("Node ID: %d", node.first);
+        ImGui::Text("Node Name: %s", node.second.Name.c_str());
+        for (const auto &input : node.second.InputIDs)
+        {
+            ImGui::Text("Input ID: %d", input);
+        }
+        for (const auto &output : node.second.OutputIDs)
+        {
+            ImGui::Text("Output ID: %d", output);
+        }
+    }
+
+    ImGui::End();
+}
+
 void NodeManager::CreateNode()
 {
     uint32_t nodeId = GetNewNodeID();
@@ -413,32 +441,4 @@ uint32_t NodeManager::GetNewPinID()
 uint32_t NodeManager::GetNewLinkID()
 {
     return m_NextLinkID++;
-}
-
-void NodeManager::RenderState()
-{
-    ImGui::Begin("Node Manager State");
-    ImGui::Text("Registered Nodes: %d", m_RegisteredNodes.size());
-    ImGui::Text("Registered Pins: %d", m_RegisteredPins.size());
-    ImGui::Text("Registered Links: %d", m_RegisteredLinks.size());
-
-    ImGui::Separator();
-
-    // Node Data
-    ImGui::Text("Node Data");
-    for (const auto &node : m_NodeDataMap)
-    {
-        ImGui::Text("Node ID: %d", node.first);
-        ImGui::Text("Node Name: %s", node.second.Name.c_str());
-        for (const auto &input : node.second.InputIDs)
-        {
-            ImGui::Text("Input ID: %d", input);
-        }
-        for (const auto &output : node.second.OutputIDs)
-        {
-            ImGui::Text("Output ID: %d", output);
-        }
-    }
-
-    ImGui::End();
 }
