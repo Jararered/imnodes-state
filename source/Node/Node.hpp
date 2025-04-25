@@ -12,4 +12,5 @@ struct Node
     std::string Name;
     std::vector<NodeIO> Inputs;
     std::vector<NodeIO> Outputs;
+    std::vector<uint32_t> LinkIDs;
 };

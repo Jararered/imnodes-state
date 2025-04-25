@@ -39,32 +39,25 @@ void NodeManager::RemoveNode(uint32_t nodeId)
     for (auto &input : node->Inputs)
     {
         m_IOs.erase(input.ID);
-
-        // Search through links to see if and contain the input id
-        for (auto &[linkId, inputOutput] : m_Links)
-        {
-            if (inputOutput.first == input.ID || inputOutput.second == input.ID)
-            {
-                std::cout << "Removing link " << linkId << std::endl;
-                RemoveLink(linkId);
-            }
-        }
     }
 
     // Remove all outputs
     for (auto &output : node->Outputs)
     {
         m_IOs.erase(output.ID);
+    }
 
-        // Search through links to see if and contain the output id
-        for (auto &[linkId, inputOutput] : m_Links)
-        {
-            if (inputOutput.first == output.ID || inputOutput.second == output.ID)
-            {
-                std::cout << "Removing link " << linkId << std::endl;
-                RemoveLink(linkId);
-            }
-        }
+    // Remove all links
+    for (auto &linkId : node->LinkIDs)
+    {
+        RemoveLink(linkId);
+    }
+
+    // Ensure key exists
+    if (m_Nodes.find(nodeId) == m_Nodes.end())
+    {
+        std::cerr << "[NodeManager] Node " << nodeId << " does not exist" << std::endl;
+        return;
     }
 
     m_Nodes.erase(nodeId);
@@ -180,6 +173,12 @@ uint32_t NodeManager::CreateLink(uint32_t inputId, uint32_t outputId)
 
 void NodeManager::RemoveLink(uint32_t linkId)
 {
+    if (!LinkExists(linkId))
+    {
+        std::cerr << "[NodeManager] Link " << linkId << " does not exist" << std::endl;
+        return;
+    }
+
     m_Links.erase(linkId);
 }
 
