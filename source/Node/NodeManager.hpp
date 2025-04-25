@@ -25,7 +25,7 @@ enum class PinType
 struct PinData
 {
     uint32_t NodeID;
-    PinType PinType;
+    PinType Type;
     std::string Name;
     LinkIDSet Links;
 };
