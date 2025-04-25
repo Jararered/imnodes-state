@@ -36,7 +36,6 @@ private:
 
     NodeIDSet m_SelectedNodes;
     LinkIDSet m_SelectedLinks;
-    PinIDSet m_SelectedPins;
 
     uint32_t m_HoveredNodeID;
     uint32_t m_HoveredLinkID;

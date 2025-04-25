@@ -311,21 +311,6 @@ void NodeLayer::RenderState()
     }
     ImGui::Text(selectedLinksString.c_str());
 
-    // Selected Pins
-    std::string selectedPinsString = "Selected Pin IDs: ";
-    it = m_SelectedPins.begin();
-    end = m_SelectedPins.end();
-    while (it != end)
-    {
-        selectedPinsString += std::to_string(*it);
-        ++it;
-        if (it != end)
-        {
-            selectedPinsString += ", ";
-        }
-    }
-    ImGui::Text(selectedPinsString.c_str());
-
     ImGui::Separator();
 
     // Hovered Node
