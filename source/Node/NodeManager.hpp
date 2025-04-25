@@ -8,7 +8,7 @@
 #include <memory>
 
 using NodePtr = std::shared_ptr<Node>;
-using NodeSet = std::unordered_set<NodePtr>;
+using NodeSet = std::unordered_set<uint32_t>;
 using NodeMap = std::unordered_map<uint32_t, NodePtr>;
 using IOSet = std::set<uint32_t>;
 using Link = std::pair<uint32_t, uint32_t>;
