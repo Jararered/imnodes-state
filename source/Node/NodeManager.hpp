@@ -10,10 +10,10 @@
 #include <unordered_map>
 
 using NodeIDSet = std::set<uint32_t>;
-using NodeIDQueue = std::queue<uint32_t>;
 using PinIDSet = std::set<uint32_t>;
-using PinIDQueue = std::queue<uint32_t>;
 using LinkIDSet = std::set<uint32_t>;
+using NodeIDQueue = std::queue<uint32_t>;
+using PinIDQueue = std::queue<uint32_t>;
 using LinkIDQueue = std::queue<uint32_t>;
 
 enum class PinType
