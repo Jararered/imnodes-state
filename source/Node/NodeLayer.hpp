@@ -16,9 +16,14 @@ public:
 
     void RenderNodeEditor();
 
+    void UpdateSelectedState();
     void UpdateSelectedNodes();
     void UpdateSelectedLinks();
+
+    void UpdateHoveredState();
     void UpdateHoveredNode();
+    void UpdateHoveredLink();
+    void UpdateHoveredPin();
 
     void ProcessLinkEvents();
     void ProcessLayerEvents();
@@ -28,7 +33,12 @@ public:
 
 private:
     NodeManager m_NodeManager;
+
     NodeIDSet m_SelectedNodes;
     LinkIDSet m_SelectedLinks;
-    uint32_t m_HoveredNode;
+    PinIDSet m_SelectedPins;
+
+    uint32_t m_HoveredNodeID;
+    uint32_t m_HoveredLinkID;
+    uint32_t m_HoveredPinID;
 };

@@ -8,23 +8,21 @@
 
 void NodeLayer::Update()
 {
-    m_NodeManager.ProcessQueues();
+    m_NodeManager.Update();
 
-    // Update selected Nodes
+    UpdateSelectedState();
+    UpdateHoveredState();
+}
+
+void NodeLayer::UpdateSelectedState()
+{
     UpdateSelectedNodes();
-
-    // Update selected Links
     UpdateSelectedLinks();
-
-    // Update hovered Node
-    UpdateHoveredNode();
 }
 
 void NodeLayer::UpdateSelectedNodes()
 {
     int numSelectedNodes = ImNodes::NumSelectedNodes();
-
-    // Sometimes NumSelectedNodes returns a huge negative number
     if (numSelectedNodes < 0)
     {
         m_SelectedNodes.clear();
@@ -46,6 +44,12 @@ void NodeLayer::UpdateSelectedNodes()
 void NodeLayer::UpdateSelectedLinks()
 {
     int numSelectedLinks = ImNodes::NumSelectedLinks();
+    if (numSelectedLinks < 0)
+    {
+        m_SelectedLinks.clear();
+        return;
+    }
+
     int selectedLinks[numSelectedLinks] = {-1};
     ImNodes::GetSelectedLinks(selectedLinks);
     m_SelectedLinks.clear();
@@ -58,16 +62,37 @@ void NodeLayer::UpdateSelectedLinks()
     }
 }
 
+void NodeLayer::UpdateHoveredState()
+{
+    UpdateHoveredNode();
+    UpdateHoveredLink();
+    UpdateHoveredPin();
+}
+
 void NodeLayer::UpdateHoveredNode()
 {
     int hoveredNode = -1;
     ImNodes::IsNodeHovered(&hoveredNode);
-    m_HoveredNode = hoveredNode;
+    m_HoveredNodeID = hoveredNode;
+}
+
+void NodeLayer::UpdateHoveredLink()
+{
+    int hoveredLink = -1;
+    ImNodes::IsLinkHovered(&hoveredLink);
+    m_HoveredLinkID = hoveredLink;
+}
+
+void NodeLayer::UpdateHoveredPin()
+{
+    int hoveredPin = -1;
+    ImNodes::IsPinHovered(&hoveredPin);
+    m_HoveredPinID = hoveredPin;
 }
 
 void NodeLayer::Render()
 {
-    m_NodeManager.RenderState();
+    m_NodeManager.Render();
 
     RenderState();
 
@@ -142,7 +167,7 @@ void NodeLayer::ProcessLayerEvents()
     if (ImGui::IsMouseClicked(ImGuiMouseButton_Right))
     {
         // Make sure no nodes are hovered
-        if (m_HoveredNode == -1)
+        if (m_HoveredNodeID == -1)
         {
             ImGui::OpenPopup("LayerContextMenu");
         }
@@ -257,7 +282,7 @@ void NodeLayer::RenderState()
     ImGui::Begin("Node State");
 
     // Selected Nodes
-    std::string selectedNodesString = "Selected Nodes: ";
+    std::string selectedNodesString = "Selected Node IDs: ";
     auto it = m_SelectedNodes.begin();
     auto end = m_SelectedNodes.end();
     while (it != end)
@@ -274,7 +299,7 @@ void NodeLayer::RenderState()
     ImGui::Separator();
 
     // Selected Links
-    std::string selectedLinksString = "Selected Links: ";
+    std::string selectedLinksString = "Selected Link IDs: ";
     it = m_SelectedLinks.begin();
     end = m_SelectedLinks.end();
     while (it != end)
@@ -288,10 +313,47 @@ void NodeLayer::RenderState()
     }
     ImGui::Text(selectedLinksString.c_str());
 
+    // Selected Pins
+    std::string selectedPinsString = "Selected Pin IDs: ";
+    it = m_SelectedPins.begin();
+    end = m_SelectedPins.end();
+    while (it != end)
+    {
+        selectedPinsString += std::to_string(*it);
+        ++it;
+        if (it != end)
+        {
+            selectedPinsString += ", ";
+        }
+    }
+    ImGui::Text(selectedPinsString.c_str());
+
     ImGui::Separator();
 
     // Hovered Node
-    ImGui::Text("Hovered Node: %d", m_HoveredNode);
+    std::string hoveredNodeString = "Hovered Node ID: ";
+    if (m_HoveredNodeID != -1)
+    {
+        hoveredNodeString += std::to_string(m_HoveredNodeID);
+    }
+
+    // Hovered Link
+    std::string hoveredLinkString = "Hovered Link ID: ";
+    if (m_HoveredLinkID != -1)
+    {
+        hoveredLinkString += std::to_string(m_HoveredLinkID);
+    }
+
+    // Hovered Pin
+    std::string hoveredPinString = "Hovered Pin ID: ";
+    if (m_HoveredPinID != -1)
+    {
+        hoveredPinString += std::to_string(m_HoveredPinID);
+    }
+
+    ImGui::Text(hoveredNodeString.c_str());
+    ImGui::Text(hoveredLinkString.c_str());
+    ImGui::Text(hoveredPinString.c_str());
 
     ImGui::End();
 }
