@@ -27,6 +27,7 @@ struct PinData
     uint32_t NodeID;
     PinType PinType;
     std::string Name;
+    LinkIDSet Links;
 };
 
 struct NodeData
@@ -34,14 +35,11 @@ struct NodeData
     std::string Name;
     PinIDSet InputIDs;
     PinIDSet OutputIDs;
-    LinkIDSet LinkIDs;
 };
 
 struct LinkData
 {
-    uint32_t Node1ID;
     uint32_t Pin1ID;
-    uint32_t Node2ID;
     uint32_t Pin2ID;
 };
 
@@ -78,15 +76,37 @@ public:
         m_NodeDataMap[nodeId] = NodeData{name};
     }
 
-    void CreateLink(uint32_t node1, uint32_t node2)
+    void CreateLink(uint32_t pin1Id, uint32_t pin2Id)
     {
         uint32_t linkId = GetNewLinkID();
+
+        // Check if pin1 ID is registered
+        if (m_RegisteredPins.find(pin1Id) == m_RegisteredPins.end())
+        {
+            std::cerr << "[NodeManager] Pin not registered: " << pin1Id << std::endl;
+            return;
+        }
+
+        // Check if pin2 ID is registered
+        if (m_RegisteredPins.find(pin2Id) == m_RegisteredPins.end())
+        {
+            std::cerr << "[NodeManager] Pin not registered: " << pin2Id << std::endl;
+            return;
+        }
+
+        // Get pin data for pin1 and pin2
+        auto &pin1Data = m_PinDataMap.at(pin1Id);
+        auto &pin2Data = m_PinDataMap.at(pin2Id);
+
+        // Add link to pin1 and pin2
+        pin1Data.Links.insert(linkId);
+        pin2Data.Links.insert(linkId);
 
         std::cout << "[NodeManager] Adding link id " << linkId << " to register queue" << std::endl;
         m_LinksToRegister.push(linkId);
 
         std::cout << "[NodeManager] Adding link id " << linkId << " data to link data map" << std::endl;
-        m_LinkDataMap[linkId] = LinkData{node1, node2};
+        m_LinkDataMap[linkId] = LinkData{pin1Id, pin2Id};
     }
 
     void CreatePin(uint32_t nodeId, PinType pinType)
@@ -399,6 +419,11 @@ public:
     const PinData &GetPinData(uint32_t pinId) const
     {
         return m_PinDataMap.at(pinId);
+    }
+
+    const LinkIDSet &GetRegisteredLinks() const
+    {
+        return m_RegisteredLinks;
     }
 
     const LinkData &GetLinkData(uint32_t linkId) const
