@@ -11,10 +11,13 @@ Part of the challenge of this project was to use the CMake function FetchContent
 ## How
 
 ### Requirements
-
-- Python
+- Python (Packages required: jinja2)
 - CMake
 - GCC
+
+### Tested Environments
+- Windows 11
+- Arch Linux (Through WSL)
 
 ### Building
 
