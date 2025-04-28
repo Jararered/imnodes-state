@@ -31,6 +31,9 @@ public:
 
     void RenderState();
 
+    bool IsNodeHovered();
+    bool IsLinkHovered();
+
 private:
     NodeManager m_NodeManager;
 

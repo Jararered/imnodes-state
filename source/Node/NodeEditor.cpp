@@ -159,12 +159,60 @@ void NodeEditor::ProcessLinkEvents()
     {
         m_NodeManager.CreateLink(inputId, outputId);
     }
+
+    bool isMouseRightClicked = ImGui::IsMouseClicked(ImGuiMouseButton_Right);
+
+    if (isMouseRightClicked)
+    {
+        int selectedLinksSize = m_SelectedLinks.size();
+        std::cout << "selectedLinksSize: " << selectedLinksSize << std::endl;
+        int selectedNodesSize = m_SelectedNodes.size();
+        std::cout << "selectedNodesSize: " << selectedNodesSize << std::endl;
+        bool isLinkHovered = IsLinkHovered();
+        std::cout << "isLinkHovered: " << isLinkHovered << std::endl;
+
+        if (selectedLinksSize > 0 && selectedNodesSize == 0 && isLinkHovered)
+        {
+            int numSelectedLinks = m_SelectedLinks.size();
+            if (numSelectedLinks == 1)
+            {
+                ImGui::OpenPopup("SingleLinkContextMenu");
+            }
+
+            if (numSelectedLinks > 1)
+            {
+                ImGui::OpenPopup("MultiLinkContextMenu");
+            }
+        }
+    }
+
+    if (ImGui::BeginPopup("SingleLinkContextMenu"))
+    {
+        if (ImGui::MenuItem("Delete"))
+        {
+            m_NodeManager.RemoveLinks(m_SelectedLinks);
+        }
+
+        ImGui::EndPopup();
+    }
+
+    if (ImGui::BeginPopup("MultiLinkContextMenu"))
+    {
+        std::string itemName = "Delete " + std::to_string(m_SelectedLinks.size()) + " links";
+        if (ImGui::MenuItem(itemName.c_str()))
+        {
+            m_NodeManager.RemoveLinks(m_SelectedLinks);
+        }
+
+        ImGui::EndPopup();
+    }
 }
 
 void NodeEditor::ProcessLayerEvents()
 {
     // Layer Right Click - Show Context Menu
-    if (ImGui::IsMouseClicked(ImGuiMouseButton_Right))
+    bool isNothingHovered = m_HoveredNodeID == -1 && m_HoveredLinkID == -1 && m_HoveredPinID == -1;
+    if (ImGui::IsMouseClicked(ImGuiMouseButton_Right) && isNothingHovered)
     {
         // Make sure no nodes are hovered
         if (m_HoveredNodeID == -1)
@@ -189,12 +237,18 @@ void NodeEditor::ProcessNodeEvents()
     int numSelectedNodes = m_SelectedNodes.size();
 
     // Node Right Click - Show Context Menu
-    if (ImGui::IsMouseClicked(ImGuiMouseButton_Right))
+    bool isNodeHovered = IsNodeHovered();
+    if (ImGui::IsMouseClicked(ImGuiMouseButton_Right) && isNodeHovered)
     {
         // Make sure only one node is selected
         if (numSelectedNodes == 1)
         {
-            ImGui::OpenPopup("SingleNodeContextMenu");
+            int selectedNodeId = *m_SelectedNodes.begin();
+            int hoveredNodeId = m_HoveredNodeID;
+            if (selectedNodeId == hoveredNodeId)
+            {
+                ImGui::OpenPopup("SingleNodeContextMenu");
+            }
         }
 
         if (numSelectedNodes > 1)
@@ -203,11 +257,9 @@ void NodeEditor::ProcessNodeEvents()
         }
     }
 
-    // Show Context Menu
     if (ImGui::BeginPopupContextWindow("SingleNodeContextMenu"))
     {
         int selectedNodeId = *m_SelectedNodes.begin();
-
         if (ImGui::BeginMenu("Pins"))
         {
             if (ImGui::MenuItem("Add Input"))
@@ -222,7 +274,6 @@ void NodeEditor::ProcessNodeEvents()
             ImGui::EndMenu();
         }
 
-        // Submenu for removing inputs and outputs
         if (m_NodeManager.GetNodeData(selectedNodeId).InputIDs.size() > 0)
         {
             if (ImGui::BeginMenu("Inputs"))
@@ -340,4 +391,14 @@ void NodeEditor::RenderState()
     ImGui::Text(hoveredPinString.c_str());
 
     ImGui::End();
+}
+
+bool NodeEditor::IsNodeHovered()
+{
+    return m_HoveredNodeID != -1;
+}
+
+bool NodeEditor::IsLinkHovered()
+{
+    return m_HoveredLinkID != -1;
 }
