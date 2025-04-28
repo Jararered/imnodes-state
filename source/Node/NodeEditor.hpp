@@ -15,6 +15,11 @@ public:
     void Render() override;
 
     void RenderNodeEditor();
+    void RenderNodes();
+    void RenderLinks();
+    void RenderMiniMap();
+    void RenderState();
+    void RenderToolTip();
 
     void UpdateSelectedState();
     void UpdateSelectedNodes();
@@ -28,8 +33,6 @@ public:
     void ProcessLinkEvents();
     void ProcessLayerEvents();
     void ProcessNodeEvents();
-
-    void RenderState();
 
     bool IsNodeHovered();
     bool IsLinkHovered();

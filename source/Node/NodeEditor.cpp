@@ -94,9 +94,9 @@ void NodeEditor::Render()
 {
     m_NodeManager.Render();
 
-    RenderState();
-
     RenderNodeEditor();
+    RenderState();
+    RenderToolTip();
 
     ProcessLinkEvents();
     ProcessLayerEvents();
@@ -108,8 +108,21 @@ void NodeEditor::RenderNodeEditor()
     ImGui::Begin(m_Name.c_str());
     ImNodes::BeginNodeEditor();
 
+    RenderNodes();
+    RenderLinks();
+    RenderMiniMap();
+
+    ImNodes::EndNodeEditor();
+    ImGui::End();
+}
+
+void NodeEditor::RenderNodes()
+{
     for (const auto &nodeId : m_NodeManager.GetRegisteredNodes())
     {
+        ImVec2 nodePos = m_NodeManager.GetNodeData(nodeId).Position;
+        ImNodes::SetNodeScreenSpacePos(nodeId, nodePos);
+
         ImNodes::BeginNode(nodeId);
 
         ImNodes::BeginNodeTitleBar();
@@ -141,16 +154,108 @@ void NodeEditor::RenderNodeEditor()
 
         ImNodes::EndNode();
     }
+}
+
+void NodeEditor::RenderLinks()
+{
 
     for (const auto &linkId : m_NodeManager.GetRegisteredLinks())
     {
         const auto &linkData = m_NodeManager.GetLinkData(linkId);
         ImNodes::Link(linkId, linkData.Pin1ID, linkData.Pin2ID);
     }
+}
 
+void NodeEditor::RenderMiniMap()
+{
     ImNodes::MiniMap(0.2f, ImNodesMiniMapLocation_TopRight);
-    ImNodes::EndNodeEditor();
+}
+
+void NodeEditor::RenderState()
+{
+    ImGui::Begin("Node Editor State");
+
+    // Selected Nodes
+    std::string selectedNodesString = "Selected Node IDs: ";
+    auto it = m_SelectedNodes.begin();
+    auto end = m_SelectedNodes.end();
+    while (it != end)
+    {
+        selectedNodesString += std::to_string(*it);
+        it++;
+        if (it != end)
+        {
+            selectedNodesString += ", ";
+        }
+    }
+
+    // Selected Links
+    std::string selectedLinksString = "Selected Link IDs: ";
+    it = m_SelectedLinks.begin();
+    end = m_SelectedLinks.end();
+    while (it != end)
+    {
+        selectedLinksString += std::to_string(*it);
+        it++;
+        if (it != end)
+        {
+            selectedLinksString += ", ";
+        }
+    }
+
+    ImGui::Text(selectedNodesString.c_str());
+    ImGui::Text(selectedLinksString.c_str());
+
+    ImGui::Separator();
+
+    // Hovered Node
+    std::string hoveredNodeString = "Hovered Node ID: ";
+    if (m_HoveredNodeID != -1)
+    {
+        hoveredNodeString += std::to_string(m_HoveredNodeID);
+    }
+
+    // Hovered Link
+    std::string hoveredLinkString = "Hovered Link ID: ";
+    if (m_HoveredLinkID != -1)
+    {
+        hoveredLinkString += std::to_string(m_HoveredLinkID);
+    }
+
+    // Hovered Pin
+    std::string hoveredPinString = "Hovered Pin ID: ";
+    if (m_HoveredPinID != -1)
+    {
+        hoveredPinString += std::to_string(m_HoveredPinID);
+    }
+
+    ImGui::Text(hoveredNodeString.c_str());
+    ImGui::Text(hoveredLinkString.c_str());
+    ImGui::Text(hoveredPinString.c_str());
+
     ImGui::End();
+}
+
+void NodeEditor::RenderToolTip()
+{
+    if (m_HoveredPinID != -1)
+    {
+        ImGui::BeginTooltip();
+        ImGui::Text("Pin ID: %d", m_HoveredPinID);
+        ImGui::EndTooltip();
+    }
+    else if (m_HoveredNodeID != -1)
+    {
+        ImGui::BeginTooltip();
+        ImGui::Text("Node ID: %d", m_HoveredNodeID);
+        ImGui::EndTooltip();
+    }
+    else if (m_HoveredLinkID != -1)
+    {
+        ImGui::BeginTooltip();
+        ImGui::Text("Link ID: %d", m_HoveredLinkID);
+        ImGui::EndTooltip();
+    }
 }
 
 void NodeEditor::ProcessLinkEvents()
@@ -227,7 +332,8 @@ void NodeEditor::ProcessLayerEvents()
     {
         if (ImGui::MenuItem("Add Node"))
         {
-            m_NodeManager.CreateNode();
+            ImVec2 cursorPos = ImGui::GetMousePos();
+            m_NodeManager.CreateNode(cursorPos);
         }
         ImGui::EndPopup();
     }
@@ -327,71 +433,6 @@ void NodeEditor::ProcessNodeEvents()
 
         ImGui::EndPopup();
     }
-}
-
-void NodeEditor::RenderState()
-{
-    ImGui::Begin("Node Editor State");
-
-    // Selected Nodes
-    std::string selectedNodesString = "Selected Node IDs: ";
-    auto it = m_SelectedNodes.begin();
-    auto end = m_SelectedNodes.end();
-    while (it != end)
-    {
-        selectedNodesString += std::to_string(*it);
-        it++;
-        if (it != end)
-        {
-            selectedNodesString += ", ";
-        }
-    }
-
-    // Selected Links
-    std::string selectedLinksString = "Selected Link IDs: ";
-    it = m_SelectedLinks.begin();
-    end = m_SelectedLinks.end();
-    while (it != end)
-    {
-        selectedLinksString += std::to_string(*it);
-        it++;
-        if (it != end)
-        {
-            selectedLinksString += ", ";
-        }
-    }
-
-    ImGui::Text(selectedNodesString.c_str());
-    ImGui::Text(selectedLinksString.c_str());
-
-    ImGui::Separator();
-
-    // Hovered Node
-    std::string hoveredNodeString = "Hovered Node ID: ";
-    if (m_HoveredNodeID != -1)
-    {
-        hoveredNodeString += std::to_string(m_HoveredNodeID);
-    }
-
-    // Hovered Link
-    std::string hoveredLinkString = "Hovered Link ID: ";
-    if (m_HoveredLinkID != -1)
-    {
-        hoveredLinkString += std::to_string(m_HoveredLinkID);
-    }
-
-    // Hovered Pin
-    std::string hoveredPinString = "Hovered Pin ID: ";
-    if (m_HoveredPinID != -1)
-    {
-        hoveredPinString += std::to_string(m_HoveredPinID);
-    }
-
-    ImGui::Text(hoveredNodeString.c_str());
-    ImGui::Text(hoveredLinkString.c_str());
-    ImGui::Text(hoveredPinString.c_str());
-
-    ImGui::End();
 }
 
 bool NodeEditor::IsNodeHovered()
