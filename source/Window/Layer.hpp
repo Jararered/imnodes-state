@@ -9,8 +9,8 @@ public:
     Layer(const std::string &name) : m_Name(name) {}
     virtual ~Layer() = default;
 
-    virtual void Update() {};
-    virtual void Render() {};
+    virtual void Update() = 0;
+    virtual void Render() = 0;
 
     std::string m_Name = "Layer";
 };
