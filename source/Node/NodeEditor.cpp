@@ -267,19 +267,13 @@ void NodeEditor::ProcessLinkEvents()
     }
 
     bool isMouseRightClicked = ImGui::IsMouseClicked(ImGuiMouseButton_Right);
-
     if (isMouseRightClicked)
     {
-        int selectedLinksSize = m_SelectedLinks.size();
-        std::cout << "selectedLinksSize: " << selectedLinksSize << std::endl;
-        int selectedNodesSize = m_SelectedNodes.size();
-        std::cout << "selectedNodesSize: " << selectedNodesSize << std::endl;
+        int numSelectedLinks = m_SelectedLinks.size();
+        int numSelectedNodes = m_SelectedNodes.size();
         bool isLinkHovered = IsLinkHovered();
-        std::cout << "isLinkHovered: " << isLinkHovered << std::endl;
-
-        if (selectedLinksSize > 0 && selectedNodesSize == 0 && isLinkHovered)
+        if (numSelectedLinks > 0 && numSelectedNodes == 0 && isLinkHovered)
         {
-            int numSelectedLinks = m_SelectedLinks.size();
             if (numSelectedLinks == 1)
             {
                 ImGui::OpenPopup("SingleLinkContextMenu");
@@ -344,8 +338,9 @@ void NodeEditor::ProcessNodeEvents()
     int numSelectedNodes = m_SelectedNodes.size();
 
     // Node Right Click - Show Context Menu
+    bool isRightClick = ImGui::IsMouseClicked(ImGuiMouseButton_Right);
     bool isNodeHovered = IsNodeHovered();
-    if (ImGui::IsMouseClicked(ImGuiMouseButton_Right) && isNodeHovered)
+    if (isRightClick && isNodeHovered)
     {
         // Make sure only one node is selected
         if (numSelectedNodes == 1)
@@ -381,7 +376,8 @@ void NodeEditor::ProcessNodeEvents()
             ImGui::EndMenu();
         }
 
-        if (m_NodeManager.GetNodeData(selectedNodeId).InputIDs.size() > 0)
+        bool hasInputs = m_NodeManager.GetNodeData(selectedNodeId).InputIDs.size() > 0;
+        if (hasInputs)
         {
             if (ImGui::BeginMenu("Inputs"))
             {
@@ -397,7 +393,8 @@ void NodeEditor::ProcessNodeEvents()
             }
         }
 
-        if (m_NodeManager.GetNodeData(selectedNodeId).OutputIDs.size() > 0)
+        bool hasOutputs = m_NodeManager.GetNodeData(selectedNodeId).OutputIDs.size() > 0;
+        if (hasOutputs)
         {
             if (ImGui::BeginMenu("Outputs"))
             {
