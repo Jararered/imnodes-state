@@ -1,5 +1,7 @@
 #pragma once
 
+#include <imgui.h>
+
 #include <cstdint>
 #include <queue>
 #include <string>
@@ -30,6 +32,7 @@ struct PinData
 struct NodeData
 {
     std::string Name;
+    ImVec2 Position;
     PinIDSet InputIDs;
     PinIDSet OutputIDs;
 };
@@ -54,7 +57,9 @@ public:
     void Update();
 
     void CreateNode();
+    void CreateNode(const ImVec2 &position);
     void CreateNode(const std::string &name);
+    void CreateNode(const std::string &name, const ImVec2 &position);
     void CreateLink(uint32_t pin1Id, uint32_t pin2Id);
     void CreatePin(uint32_t nodeId, PinType pinType);
     void CreatePin(uint32_t nodeId, PinType pinType, const std::string &name);
