@@ -148,6 +148,7 @@ void NodeEditor::RenderNodeEditor()
         ImNodes::Link(linkId, linkData.Pin1ID, linkData.Pin2ID);
     }
 
+    ImNodes::MiniMap(0.2f, ImNodesMiniMapLocation_TopRight);
     ImNodes::EndNodeEditor();
     ImGui::End();
 }
