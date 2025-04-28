@@ -5,6 +5,7 @@ add_executable(NodeSimulation main.cpp)
 target_sources(NodeSimulation PRIVATE 
     ${CMAKE_CURRENT_SOURCE_DIR}/Window/Window.cpp 
     ${CMAKE_CURRENT_SOURCE_DIR}/Window/MenuBar.cpp 
+    ${CMAKE_CURRENT_SOURCE_DIR}/Window/FileMenu.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/Node/NodeEditor.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/Node/NodeManager.cpp
 )
