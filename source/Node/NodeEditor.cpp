@@ -120,8 +120,9 @@ void NodeEditor::RenderNodes()
 {
     for (const auto &nodeId : m_NodeManager.GetRegisteredNodes())
     {
-        ImVec2 nodePos = m_NodeManager.GetNodeData(nodeId).Position;
-        ImNodes::SetNodeScreenSpacePos(nodeId, nodePos);
+        const auto &nodePos = m_NodeManager.GetNodeData(nodeId).Position;
+        ImVec2 nodePosVec = ImVec2(nodePos.first, nodePos.second);
+        ImNodes::SetNodeScreenSpacePos(nodeId, nodePosVec);
 
         ImNodes::BeginNode(nodeId);
 
