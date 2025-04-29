@@ -26,6 +26,8 @@ public:
     virtual void Update();
     virtual void Finalize();
 
+    virtual void ShowContextMenu();
+
 private:
     ObjectLinkParameters m_Parameters;
 };

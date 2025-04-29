@@ -22,6 +22,8 @@ public:
     virtual void Update();
     virtual void Finalize();
 
+    virtual void ShowContextMenu();
+
 private:
     ObjectNodeParameters m_Parameters;
 };
