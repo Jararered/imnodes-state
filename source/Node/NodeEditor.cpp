@@ -29,7 +29,7 @@ void NodeEditor::UpdateSelectedNodes()
         return;
     }
 
-    int selectedNodes[numSelectedNodes] = {-1};
+    int selectedNodes[128] = {-1};
     ImNodes::GetSelectedNodes(selectedNodes);
     m_SelectedNodes.clear();
     for (int i = 0; i < numSelectedNodes; i++)
@@ -50,7 +50,7 @@ void NodeEditor::UpdateSelectedLinks()
         return;
     }
 
-    int selectedLinks[numSelectedLinks] = {-1};
+    int selectedLinks[128] = {-1};
     ImNodes::GetSelectedLinks(selectedLinks);
     m_SelectedLinks.clear();
     for (int i = 0; i < numSelectedLinks; i++)
