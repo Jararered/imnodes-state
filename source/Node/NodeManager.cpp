@@ -54,7 +54,7 @@ void NodeManager::CreateNode()
     m_NodeDataMap[nodeId] = NodeData{name};
 }
 
-void NodeManager::CreateNode(const ImVec2& position)
+void NodeManager::CreateNode(float x, float y)
 {
     uint32_t nodeId = GetNewNodeID();
     std::string name = "Node (ID: " + std::to_string(nodeId) + ")";
@@ -63,7 +63,7 @@ void NodeManager::CreateNode(const ImVec2& position)
     m_NodesToRegister.push(nodeId);
 
     std::cout << "[NodeManager] Adding node id " << nodeId << " data to node data map" << std::endl;
-    m_NodeDataMap[nodeId] = NodeData{name, std::make_pair(position.x, position.y)};
+    m_NodeDataMap[nodeId] = NodeData{name, std::make_pair(x, y)};
 }
 
 void NodeManager::CreateNode(const std::string& name)
@@ -77,7 +77,7 @@ void NodeManager::CreateNode(const std::string& name)
     m_NodeDataMap[nodeId] = NodeData{name};
 }
 
-void NodeManager::CreateNode(const std::string& name, const ImVec2& position)
+void NodeManager::CreateNode(const std::string& name, float x, float y)
 {
     uint32_t nodeId = GetNewNodeID();
 
@@ -85,7 +85,7 @@ void NodeManager::CreateNode(const std::string& name, const ImVec2& position)
     m_NodesToRegister.push(nodeId);
 
     std::cout << "[NodeManager] Adding node id " << nodeId << " data to node data map" << std::endl;
-    m_NodeDataMap[nodeId] = NodeData{name, std::make_pair(position.x, position.y)};
+    m_NodeDataMap[nodeId] = NodeData{name, std::make_pair(x, y)};
 }
 
 void NodeManager::CreateLink(uint32_t pin1Id, uint32_t pin2Id)

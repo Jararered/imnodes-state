@@ -328,7 +328,7 @@ void NodeEditor::ProcessLayerEvents()
         if (ImGui::MenuItem("Add Node"))
         {
             ImVec2 cursorPos = ImGui::GetMousePos();
-            m_NodeManager.CreateNode(cursorPos);
+            m_NodeManager.CreateNode(cursorPos.x, cursorPos.y);
         }
         ImGui::EndPopup();
     }

@@ -12,9 +12,9 @@ public:
     void Update();
 
     void CreateNode();
-    void CreateNode(const ImVec2& position);
+    void CreateNode(float x, float y);
     void CreateNode(const std::string& name);
-    void CreateNode(const std::string& name, const ImVec2& position);
+    void CreateNode(const std::string& name, float x, float y);
     void CreateLink(uint32_t pin1Id, uint32_t pin2Id);
     void CreatePin(uint32_t nodeId, PinType pinType);
     void CreatePin(uint32_t nodeId, PinType pinType, const std::string& name);
