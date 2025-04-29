@@ -6,11 +6,11 @@
 class SimulationEditor : public NodeEditor
 {
 public:
-    SimulationEditor() : NodeEditor("Simulation Editor") {}
-    ~SimulationEditor() override {}
+    SimulationEditor();
+    ~SimulationEditor() override;
 
-    void Update() override { NodeEditor::Update(); }
-    void Render() override { NodeEditor::Render(); }
+    void Update() override;
+    void Render() override;
 
 private:
     Simulation m_Simulation;
