@@ -7,6 +7,7 @@ class NodeEditor : public Layer
 {
 public:
     NodeEditor() : Layer("New Node Editor") {}
+    NodeEditor(const std::string& name) : Layer(name) {}
     ~NodeEditor() override {}
 
     void Update() override;
