@@ -25,15 +25,15 @@ void NodeManager::RenderState()
 
     // Node Data
     ImGui::Text("Node Data");
-    for (const auto &node : m_NodeDataMap)
+    for (const auto& node : m_NodeDataMap)
     {
         ImGui::Text("Node ID: %d", node.first);
         ImGui::Text("Node Name: %s", node.second.Name.c_str());
-        for (const auto &input : node.second.InputIDs)
+        for (const auto& input : node.second.InputIDs)
         {
             ImGui::Text("Input ID: %d", input);
         }
-        for (const auto &output : node.second.OutputIDs)
+        for (const auto& output : node.second.OutputIDs)
         {
             ImGui::Text("Output ID: %d", output);
         }
@@ -54,7 +54,7 @@ void NodeManager::CreateNode()
     m_NodeDataMap[nodeId] = NodeData{name};
 }
 
-void NodeManager::CreateNode(const ImVec2 &position)
+void NodeManager::CreateNode(const ImVec2& position)
 {
     uint32_t nodeId = GetNewNodeID();
     std::string name = "Node (ID: " + std::to_string(nodeId) + ")";
@@ -66,7 +66,7 @@ void NodeManager::CreateNode(const ImVec2 &position)
     m_NodeDataMap[nodeId] = NodeData{name, std::make_pair(position.x, position.y)};
 }
 
-void NodeManager::CreateNode(const std::string &name)
+void NodeManager::CreateNode(const std::string& name)
 {
     uint32_t nodeId = GetNewNodeID();
 
@@ -77,7 +77,7 @@ void NodeManager::CreateNode(const std::string &name)
     m_NodeDataMap[nodeId] = NodeData{name};
 }
 
-void NodeManager::CreateNode(const std::string &name, const ImVec2 &position)
+void NodeManager::CreateNode(const std::string& name, const ImVec2& position)
 {
     uint32_t nodeId = GetNewNodeID();
 
@@ -107,8 +107,8 @@ void NodeManager::CreateLink(uint32_t pin1Id, uint32_t pin2Id)
     }
 
     // Get pin data for pin1 and pin2
-    auto &pin1Data = m_PinDataMap.at(pin1Id);
-    auto &pin2Data = m_PinDataMap.at(pin2Id);
+    auto& pin1Data = m_PinDataMap.at(pin1Id);
+    auto& pin2Data = m_PinDataMap.at(pin2Id);
 
     // Add link to pin1 and pin2
     pin1Data.Links.insert(linkId);
@@ -135,7 +135,7 @@ void NodeManager::CreatePin(uint32_t nodeId, PinType pinType)
     }
 
     // Find node data and add pin to either inputs or outputs
-    auto &nodeData = m_NodeDataMap.at(nodeId);
+    auto& nodeData = m_NodeDataMap.at(nodeId);
     if (pinType == PinType::Input)
     {
         std::cout << "[NodeManager] Adding pin id " << pinId << " to node id " << nodeId << " as input" << std::endl;
@@ -164,16 +164,18 @@ void NodeManager::RemoveNode(uint32_t nodeId)
     }
 
     // Clear all pins from node
-    auto &nodeData = m_NodeDataMap.at(nodeId);
-    for (const auto &inputId : nodeData.InputIDs)
+    auto& nodeData = m_NodeDataMap.at(nodeId);
+    for (const auto& inputId : nodeData.InputIDs)
     {
-        std::cout << "[NodeManager] Removing pin id " << inputId << " from node id " << nodeId << " as input" << std::endl;
+        std::cout << "[NodeManager] Removing pin id " << inputId << " from node id " << nodeId << " as input"
+                  << std::endl;
         RemovePin(nodeId, inputId);
     }
 
-    for (const auto &outputId : nodeData.OutputIDs)
+    for (const auto& outputId : nodeData.OutputIDs)
     {
-        std::cout << "[NodeManager] Removing pin id " << outputId << " from node id " << nodeId << " as output" << std::endl;
+        std::cout << "[NodeManager] Removing pin id " << outputId << " from node id " << nodeId << " as output"
+                  << std::endl;
         RemovePin(nodeId, outputId);
     }
 
@@ -181,9 +183,9 @@ void NodeManager::RemoveNode(uint32_t nodeId)
     m_NodesToDeregister.push(nodeId);
 }
 
-void NodeManager::RemoveNodes(const NodeIDSet &nodeIds)
+void NodeManager::RemoveNodes(const NodeIDSet& nodeIds)
 {
-    for (const auto &nodeId : nodeIds)
+    for (const auto& nodeId : nodeIds)
     {
         std::cout << "[NodeManager] Removing node id " << nodeId << " from deregister queue" << std::endl;
         RemoveNode(nodeId);
@@ -203,9 +205,9 @@ void NodeManager::RemoveLink(uint32_t linkId)
     m_LinksToDeregister.push(linkId);
 }
 
-void NodeManager::RemoveLinks(const LinkIDSet &linkIds)
+void NodeManager::RemoveLinks(const LinkIDSet& linkIds)
 {
-    for (const auto &linkId : linkIds)
+    for (const auto& linkId : linkIds)
     {
         std::cout << "[NodeManager] Removing link id " << linkId << " from deregister queue" << std::endl;
         RemoveLink(linkId);
@@ -236,7 +238,7 @@ void NodeManager::RemovePin(uint32_t nodeId, uint32_t pinId)
     m_PinsToDeregister.push(pinId);
 }
 
-void NodeManager::CreatePin(uint32_t nodeId, PinType pinType, const std::string &name)
+void NodeManager::CreatePin(uint32_t nodeId, PinType pinType, const std::string& name)
 {
     uint32_t pinId = GetNewPinID();
 
@@ -254,27 +256,27 @@ void NodeManager::CreatePin(uint32_t nodeId, PinType pinType, const std::string 
     m_PinDataMap[pinId] = PinData{name, nodeId, pinType};
 }
 
-const NodeIDSet &NodeManager::GetRegisteredNodes() const
+const NodeIDSet& NodeManager::GetRegisteredNodes() const
 {
     return m_RegisteredNodes;
 }
 
-const NodeData &NodeManager::GetNodeData(uint32_t nodeId) const
+const NodeData& NodeManager::GetNodeData(uint32_t nodeId) const
 {
     return m_NodeDataMap.at(nodeId);
 }
 
-const PinData &NodeManager::GetPinData(uint32_t pinId) const
+const PinData& NodeManager::GetPinData(uint32_t pinId) const
 {
     return m_PinDataMap.at(pinId);
 }
 
-const LinkIDSet &NodeManager::GetRegisteredLinks() const
+const LinkIDSet& NodeManager::GetRegisteredLinks() const
 {
     return m_RegisteredLinks;
 }
 
-const LinkData &NodeManager::GetLinkData(uint32_t linkId) const
+const LinkData& NodeManager::GetLinkData(uint32_t linkId) const
 {
     return m_LinkDataMap.at(linkId);
 }

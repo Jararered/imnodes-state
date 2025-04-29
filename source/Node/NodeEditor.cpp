@@ -118,9 +118,9 @@ void NodeEditor::RenderNodeEditor()
 
 void NodeEditor::RenderNodes()
 {
-    for (const auto &nodeId : m_NodeManager.GetRegisteredNodes())
+    for (const auto& nodeId : m_NodeManager.GetRegisteredNodes())
     {
-        const auto &nodePos = m_NodeManager.GetNodeData(nodeId).Position;
+        const auto& nodePos = m_NodeManager.GetNodeData(nodeId).Position;
         ImVec2 nodePosVec = ImVec2(nodePos.first, nodePos.second);
         ImNodes::SetNodeScreenSpacePos(nodeId, nodePosVec);
 
@@ -130,8 +130,8 @@ void NodeEditor::RenderNodes()
         ImGui::TextUnformatted(m_NodeManager.GetNodeData(nodeId).Name.c_str());
         ImNodes::EndNodeTitleBar();
 
-        const auto &inputIDs = m_NodeManager.GetNodeData(nodeId).InputIDs;
-        const auto &outputIDs = m_NodeManager.GetNodeData(nodeId).OutputIDs;
+        const auto& inputIDs = m_NodeManager.GetNodeData(nodeId).InputIDs;
+        const auto& outputIDs = m_NodeManager.GetNodeData(nodeId).OutputIDs;
 
         // This is required as ImGui does not use the titlebar as a unique identifier
         if (inputIDs.size() == 0 && outputIDs.size() == 0)
@@ -139,14 +139,14 @@ void NodeEditor::RenderNodes()
             ImGui::Dummy(ImVec2(0, 0));
         }
 
-        for (const auto &inputID : inputIDs)
+        for (const auto& inputID : inputIDs)
         {
             ImNodes::BeginInputAttribute(inputID);
             ImGui::TextUnformatted(m_NodeManager.GetPinData(inputID).Name.c_str());
             ImNodes::EndInputAttribute();
         }
 
-        for (const auto &outputID : outputIDs)
+        for (const auto& outputID : outputIDs)
         {
             ImNodes::BeginOutputAttribute(outputID);
             ImGui::TextUnformatted(m_NodeManager.GetPinData(outputID).Name.c_str());
@@ -160,9 +160,9 @@ void NodeEditor::RenderNodes()
 void NodeEditor::RenderLinks()
 {
 
-    for (const auto &linkId : m_NodeManager.GetRegisteredLinks())
+    for (const auto& linkId : m_NodeManager.GetRegisteredLinks())
     {
-        const auto &linkData = m_NodeManager.GetLinkData(linkId);
+        const auto& linkData = m_NodeManager.GetLinkData(linkId);
         ImNodes::Link(linkId, linkData.Pin1ID, linkData.Pin2ID);
     }
 }
@@ -382,7 +382,7 @@ void NodeEditor::ProcessNodeEvents()
         {
             if (ImGui::BeginMenu("Inputs"))
             {
-                for (const auto &inputID : m_NodeManager.GetNodeData(selectedNodeId).InputIDs)
+                for (const auto& inputID : m_NodeManager.GetNodeData(selectedNodeId).InputIDs)
                 {
                     if (ImGui::MenuItem(m_NodeManager.GetPinData(inputID).Name.c_str()))
                     {
@@ -399,7 +399,7 @@ void NodeEditor::ProcessNodeEvents()
         {
             if (ImGui::BeginMenu("Outputs"))
             {
-                for (const auto &outputID : m_NodeManager.GetNodeData(selectedNodeId).OutputIDs)
+                for (const auto& outputID : m_NodeManager.GetNodeData(selectedNodeId).OutputIDs)
                 {
                     if (ImGui::MenuItem(m_NodeManager.GetPinData(outputID).Name.c_str()))
                     {

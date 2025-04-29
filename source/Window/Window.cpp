@@ -1,11 +1,11 @@
 #include "Window.hpp"
 
-#include <glad/gl.h>
 #include <GLFW/glfw3.h>
+#include <glad/gl.h>
 
-#include <imgui.h>
 #include <backends/imgui_impl_glfw.h>
 #include <backends/imgui_impl_opengl3.h>
+#include <imgui.h>
 
 #include <imnodes.h>
 
@@ -14,8 +14,7 @@
 #include <queue>
 #include <vector>
 
-Window::Window(const WindowParameters &parameters)
-    : m_Parameters(parameters)
+Window::Window(const WindowParameters& parameters) : m_Parameters(parameters)
 {
 }
 
@@ -26,7 +25,7 @@ void Window::Initialize()
         std::cerr << "Failed to initialize GLFW" << std::endl;
     }
 
-    const char *glsl_version = "#version 330";
+    const char* glsl_version = "#version 330";
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
@@ -54,7 +53,7 @@ void Window::Initialize()
     // Setup Dear ImGui context
     IMGUI_CHECKVERSION();
     ImGui::CreateContext();
-    ImGuiIO &io = ImGui::GetIO();
+    ImGuiIO& io = ImGui::GetIO();
     io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard; // Enable Keyboard Controls
     io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;  // Enable Gamepad Controls
     io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;     // Enable Docking
@@ -90,7 +89,7 @@ void Window::NewFrame()
 
 void Window::Render()
 {
-    ImGuiViewport *viewport = ImGui::GetMainViewport();
+    ImGuiViewport* viewport = ImGui::GetMainViewport();
     ImGui::SetNextWindowPos(viewport->WorkPos);
     ImGui::SetNextWindowSize(viewport->WorkSize);
     ImGui::SetNextWindowViewport(viewport->ID);
@@ -99,7 +98,7 @@ void Window::Render()
 
     ImGui::Begin("Main Window", nullptr, window_flags);
 
-    for (const auto &[name, layer] : m_Layers)
+    for (const auto& [name, layer] : m_Layers)
     {
         layer->Update();
         layer->Render();
@@ -124,7 +123,7 @@ void Window::EndFrame()
 
     if (ImGui::GetIO().ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
     {
-        GLFWwindow *context = glfwGetCurrentContext();
+        GLFWwindow* context = glfwGetCurrentContext();
         ImGui::UpdatePlatformWindows();
         ImGui::RenderPlatformWindowsDefault();
         glfwMakeContextCurrent(context);
@@ -155,7 +154,7 @@ void Window::AddLayer(std::shared_ptr<Layer> layer)
     m_Layers[layer->m_Name] = layer;
 }
 
-void Window::RemoveLayer(const std::string &name)
+void Window::RemoveLayer(const std::string& name)
 {
     m_Layers.erase(name);
 }

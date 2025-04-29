@@ -8,7 +8,7 @@
 class MenuBarMenu
 {
 public:
-    MenuBarMenu(const std::string &name) : m_Name(name) {}
+    MenuBarMenu(const std::string& name) : m_Name(name) {}
     virtual ~MenuBarMenu() = default;
 
     virtual void Render() = 0;

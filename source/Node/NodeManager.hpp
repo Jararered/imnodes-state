@@ -12,24 +12,24 @@ public:
     void Update();
 
     void CreateNode();
-    void CreateNode(const ImVec2 &position);
-    void CreateNode(const std::string &name);
-    void CreateNode(const std::string &name, const ImVec2 &position);
+    void CreateNode(const ImVec2& position);
+    void CreateNode(const std::string& name);
+    void CreateNode(const std::string& name, const ImVec2& position);
     void CreateLink(uint32_t pin1Id, uint32_t pin2Id);
     void CreatePin(uint32_t nodeId, PinType pinType);
-    void CreatePin(uint32_t nodeId, PinType pinType, const std::string &name);
+    void CreatePin(uint32_t nodeId, PinType pinType, const std::string& name);
 
     void RemoveNode(uint32_t nodeId);
-    void RemoveNodes(const NodeIDSet &nodeIds);
+    void RemoveNodes(const NodeIDSet& nodeIds);
     void RemoveLink(uint32_t linkId);
-    void RemoveLinks(const LinkIDSet &linkIds);
+    void RemoveLinks(const LinkIDSet& linkIds);
     void RemovePin(uint32_t nodeId, uint32_t pinId);
 
-    const NodeIDSet &GetRegisteredNodes() const;
-    const NodeData &GetNodeData(uint32_t nodeId) const;
-    const PinData &GetPinData(uint32_t pinId) const;
-    const LinkIDSet &GetRegisteredLinks() const;
-    const LinkData &GetLinkData(uint32_t linkId) const;
+    const NodeIDSet& GetRegisteredNodes() const;
+    const NodeData& GetNodeData(uint32_t nodeId) const;
+    const PinData& GetPinData(uint32_t pinId) const;
+    const LinkIDSet& GetRegisteredLinks() const;
+    const LinkData& GetLinkData(uint32_t linkId) const;
 
 private:
     void RegisterNode(uint32_t nodeId);

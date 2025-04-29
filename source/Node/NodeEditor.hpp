@@ -1,7 +1,7 @@
 #pragma once
 
-#include <Window/Layer.hpp>
 #include <Node/NodeManager.hpp>
+#include <Window/Layer.hpp>
 
 class NodeEditor : public Layer
 {

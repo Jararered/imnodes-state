@@ -1,5 +1,5 @@
-#include <Window/Window.hpp>
 #include <Window/MenuBar.hpp>
+#include <Window/Window.hpp>
 
 #include <Node/NodeEditor.hpp>
 
@@ -16,7 +16,7 @@ int main(void)
 
     window.AddLayer(std::make_shared<MenuBar>());
     window.AddLayer(std::make_shared<NodeEditor>());
-    
+
     while (!window.ShouldClose())
     {
         window.Update();
