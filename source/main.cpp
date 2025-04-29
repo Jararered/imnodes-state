@@ -3,6 +3,8 @@
 
 #include <Node/NodeEditor.hpp>
 
+#include <Simulation/SimulationEditor.hpp>
+
 int main(void)
 {
     WindowParameters parameters;
@@ -16,6 +18,7 @@ int main(void)
 
     window.AddLayer(std::make_shared<MenuBar>());
     window.AddLayer(std::make_shared<NodeEditor>());
+    // window.AddLayer(std::make_shared<SimulationEditor>());
 
     while (!window.ShouldClose())
     {
