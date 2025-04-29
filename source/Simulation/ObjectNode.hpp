@@ -4,24 +4,24 @@
 
 #include <cstdint>
 
-struct ObjectParameters : NodeData
+struct ObjectNodeParameters
 {
     uint32_t InitializeOrder = 0;
     uint32_t UpdateOrder = 0;
     uint32_t UpdateRate = 0;
 };
 
-class Object
+class ObjectNode : public NodeData
 {
 public:
-    Object() = default;
-    Object(const ObjectParameters& parameters);
-    ~Object() = default;
+    ObjectNode() = default;
+    ObjectNode(const ObjectNodeParameters& parameters);
+    ~ObjectNode() = default;
 
     virtual void Initialize();
     virtual void Update();
     virtual void Finalize();
 
 private:
-    ObjectParameters m_Parameters;
+    ObjectNodeParameters m_Parameters;
 };
