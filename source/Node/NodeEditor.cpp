@@ -239,6 +239,7 @@ void NodeEditor::RenderState()
 
 void NodeEditor::RenderToolTip()
 {
+    // Hovered pin takes pri
     if (m_HoveredPinID != -1)
     {
         ImGui::BeginTooltip();
