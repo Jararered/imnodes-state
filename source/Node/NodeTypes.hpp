@@ -14,7 +14,7 @@ using NodeIDQueue = std::queue<uint32_t>;
 using PinIDQueue = std::queue<uint32_t>;
 using LinkIDQueue = std::queue<uint32_t>;
 
-enum class PinType
+enum class PinType : uint8_t
 {
     Input = 0,
     Output = 1
@@ -22,24 +22,24 @@ enum class PinType
 
 struct PinData
 {
-    std::string Name;
-    uint32_t NodeID;
-    PinType Type;
-    LinkIDSet Links;
+    std::string Name = "";
+    uint32_t NodeID = 0;
+    PinType Type = PinType::Input;
+    LinkIDSet Links = {};
 };
 
 struct NodeData
 {
-    std::string Name;
-    std::pair<float, float> Position;
-    PinIDSet InputIDs;
-    PinIDSet OutputIDs;
+    std::string Name = "";
+    std::pair<float, float> Position = {0.0f, 0.0f};
+    PinIDSet InputIDs = {};
+    PinIDSet OutputIDs = {};
 };
 
 struct LinkData
 {
-    uint32_t Pin1ID;
-    uint32_t Pin2ID;
+    uint32_t Pin1ID = 0;
+    uint32_t Pin2ID = 0;
 };
 
 using PinDataMap = std::unordered_map<uint32_t, PinData>;
