@@ -3,8 +3,6 @@
 #include <Window/Layer.hpp>
 #include <Node/NodeManager.hpp>
 
-#include <unordered_set>
-
 class NodeEditor : public Layer
 {
 public:
