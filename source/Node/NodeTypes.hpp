@@ -7,6 +7,8 @@
 #include <unordered_map>
 #include <vector>
 
+#include <imgui.h>
+
 using NodeIDSet = std::set<uint32_t>;
 using PinIDSet = std::set<uint32_t>;
 using LinkIDSet = std::set<uint32_t>;
@@ -26,6 +28,15 @@ struct PinData
     uint32_t NodeID = 0;
     PinType Type = PinType::Input;
     LinkIDSet Links = {};
+
+    void ShowToolTip()
+    {
+        ImGui::BeginTooltip();
+        ImGui::Text("Node ID: %d", NodeID);
+        ImGui::Text("Type: %s", Type == PinType::Input ? "Input" : "Output");
+        ImGui::Text("Links: %d", Links.size());
+        ImGui::EndTooltip();
+    }
 };
 
 struct NodeData

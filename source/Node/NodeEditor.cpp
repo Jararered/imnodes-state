@@ -240,22 +240,22 @@ void NodeEditor::RenderState()
 void NodeEditor::RenderToolTip()
 {
     // Hovered pin takes pri
-    if (m_HoveredPinID != -1)
+    if (IsPinHovered())
     {
         ImGui::BeginTooltip();
         ImGui::Text("Pin ID: %d", m_HoveredPinID);
         ImGui::EndTooltip();
     }
-    else if (m_HoveredNodeID != -1)
-    {
-        ImGui::BeginTooltip();
-        ImGui::Text("Node ID: %d", m_HoveredNodeID);
-        ImGui::EndTooltip();
-    }
-    else if (m_HoveredLinkID != -1)
+    else if (IsLinkHovered())
     {
         ImGui::BeginTooltip();
         ImGui::Text("Link ID: %d", m_HoveredLinkID);
+        ImGui::EndTooltip();
+    }
+    else if (IsNodeHovered())
+    {
+        ImGui::BeginTooltip();
+        ImGui::Text("Node ID: %d", m_HoveredNodeID);
         ImGui::EndTooltip();
     }
 }
@@ -273,8 +273,7 @@ void NodeEditor::ProcessLinkEvents()
     {
         int numSelectedLinks = m_SelectedLinks.size();
         int numSelectedNodes = m_SelectedNodes.size();
-        bool isLinkHovered = IsLinkHovered();
-        if (numSelectedLinks > 0 && numSelectedNodes == 0 && isLinkHovered)
+        if (numSelectedLinks > 0 && numSelectedNodes == 0 && IsLinkHovered())
         {
             if (numSelectedLinks == 1)
             {
@@ -313,11 +312,11 @@ void NodeEditor::ProcessLinkEvents()
 void NodeEditor::ProcessLayerEvents()
 {
     // Layer Right Click - Show Context Menu
-    bool isNothingHovered = m_HoveredNodeID == -1 && m_HoveredLinkID == -1 && m_HoveredPinID == -1;
+    bool isNothingHovered = !IsNodeHovered() && !IsLinkHovered() && !IsPinHovered();
     if (ImGui::IsMouseClicked(ImGuiMouseButton_Right) && isNothingHovered)
     {
         // Make sure no nodes are hovered
-        if (m_HoveredNodeID == -1)
+        if (!IsNodeHovered())
         {
             ImGui::OpenPopup("LayerContextMenu");
         }
@@ -448,4 +447,3 @@ bool NodeEditor::IsPinHovered()
 {
     return m_HoveredPinID != -1;
 }
-
