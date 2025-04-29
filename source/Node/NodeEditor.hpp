@@ -35,6 +35,7 @@ public:
 
     bool IsNodeHovered();
     bool IsLinkHovered();
+    bool IsPinHovered();
 
 private:
     NodeManager m_NodeManager;

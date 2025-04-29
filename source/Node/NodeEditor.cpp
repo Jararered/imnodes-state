@@ -443,3 +443,9 @@ bool NodeEditor::IsLinkHovered()
 {
     return m_HoveredLinkID != -1;
 }
+
+bool NodeEditor::IsPinHovered()
+{
+    return m_HoveredPinID != -1;
+}
+
