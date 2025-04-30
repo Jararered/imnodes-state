@@ -173,9 +173,10 @@ void NodeManager::RemoveNode(uint32_t nodeId)
         auto& pinData = m_PinDataMap.at(inputId);
         if (pinData.Links.size() > 0)
         {
-            std::cerr << "[NodeManager] Pin has links: " << inputId << std::endl;
+            std::cout << "[NodeManager] Pin has links: " << inputId << std::endl;
             for (const auto& linkId : pinData.Links)
             {
+                std::cout << "[NodeManager] Removing link id " << linkId << " from pin id " << inputId << std::endl;
                 RemoveLink(linkId);
             }
         }
@@ -191,9 +192,10 @@ void NodeManager::RemoveNode(uint32_t nodeId)
         auto& pinData = m_PinDataMap.at(outputId);
         if (pinData.Links.size() > 0)
         {
-            std::cerr << "[NodeManager] Pin has links: " << outputId << std::endl;
+            std::cout << "[NodeManager] Pin has links: " << outputId << std::endl;
             for (const auto& linkId : pinData.Links)
             {
+                std::cout << "[NodeManager] Removing link id " << linkId << " from pin id " << outputId << std::endl;
                 RemoveLink(linkId);
             }
         }
