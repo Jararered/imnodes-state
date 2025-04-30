@@ -56,19 +56,18 @@ private:
     uint32_t m_NextPinID = 0;
     uint32_t m_NextLinkID = 0;
 
-    NodeDataMap m_NodeDataMap;
-    PinDataMap m_PinDataMap;
-    LinkDataMap m_LinkDataMap;
-
     NodeIDQueue m_NodesToRegister;
     NodeIDQueue m_NodesToDeregister;
     NodeIDSet m_RegisteredNodes;
+    NodeDataMap m_NodeDataMap;
 
     PinIDQueue m_PinsToRegister;
     PinIDQueue m_PinsToDeregister;
     PinIDSet m_RegisteredPins;
+    PinDataMap m_PinDataMap;
 
     LinkIDQueue m_LinksToRegister;
     LinkIDQueue m_LinksToDeregister;
     LinkIDSet m_RegisteredLinks;
+    LinkDataMap m_LinkDataMap;
 };
