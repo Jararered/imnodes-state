@@ -15,59 +15,64 @@ public:
     void CreateNode(float x, float y);
     void CreateNode(const std::string& name);
     void CreateNode(const std::string& name, float x, float y);
-    void CreateLink(uint32_t pin1Id, uint32_t pin2Id);
-    void CreatePin(uint32_t nodeId, PinType pinType);
-    void CreatePin(uint32_t nodeId, PinType pinType, const std::string& name);
+    void CreateLink(std::uint32_t pin1Id, std::uint32_t pin2Id);
+    void CreatePin(std::uint32_t nodeId, PinType pinType);
+    void CreatePin(std::uint32_t nodeId, PinType pinType, const std::string& name);
 
-    void RemoveNode(uint32_t nodeId);
-    void RemoveNodes(const NodeIDSet& nodeIds);
-    void RemoveLink(uint32_t linkId);
-    void RemoveLinks(const LinkIDSet& linkIds);
-    void RemovePin(uint32_t nodeId, uint32_t pinId);
+    void RemoveNode(std::uint32_t nodeId);
+    void RemoveNodes(const IDSet& nodeIds);
+    void RemoveLink(std::uint32_t linkId);
+    void RemoveLinks(const IDSet& linkIds);
+    void RemovePin(std::uint32_t nodeId, std::uint32_t pinId);
 
-    const NodeIDSet& GetRegisteredNodes() const;
-    const NodeData& GetNodeData(uint32_t nodeId) const;
-    const PinData& GetPinData(uint32_t pinId) const;
-    const LinkIDSet& GetRegisteredLinks() const;
-    const LinkData& GetLinkData(uint32_t linkId) const;
+    inline void SetNodeColor(std::uint32_t nodeId, ColorData colors) { m_NodeDataMap[nodeId].Colors = colors; }
+    inline void SetLinkColor(std::uint32_t linkId, ColorData colors) { m_LinkDataMap[linkId].Colors = colors; }
+    inline void SetPinColor(std::uint32_t pinId, ColorData colors) { m_PinDataMap[pinId].Colors = colors; }
+
+    inline const IDSet& GetRegisteredNodes() const { return m_RegisteredNodes; }
+    inline const NodeData& GetNodeData(std::uint32_t nodeId) const { return m_NodeDataMap.at(nodeId); }
+
+    inline const IDSet& GetRegisteredPins() const { return m_RegisteredPins; }
+    inline const PinData& GetPinData(std::uint32_t pinId) const { return m_PinDataMap.at(pinId); }
+
+    inline const IDSet& GetRegisteredLinks() const { return m_RegisteredLinks; }
+    inline const LinkData& GetLinkData(std::uint32_t linkId) const { return m_LinkDataMap.at(linkId); }
 
 private:
-    void RegisterNode(uint32_t nodeId);
-    void RegisterPin(uint32_t pinId);
-    void RegisterLink(uint32_t linkId);
+    void RegisterNode(std::uint32_t nodeId);
+    void RegisterPin(std::uint32_t pinId);
+    void RegisterLink(std::uint32_t linkId);
 
-    void DeregisterNode(uint32_t nodeId);
-    void DeregisterPin(uint32_t pinId);
-    void DeregisterLink(uint32_t linkId);
+    void DeregisterNode(std::uint32_t nodeId);
+    void DeregisterPin(std::uint32_t pinId);
+    void DeregisterLink(std::uint32_t linkId);
 
     void ProcessQueues();
     void ProcessNodeQueues();
     void ProcessPinQueues();
     void ProcessLinkQueues();
 
-    uint32_t GetNewNodeID();
-    uint32_t GetNewPinID();
-    uint32_t GetNewLinkID();
-
-    void RenderState();
+    inline std::uint32_t GetNewNodeID() { return m_NextNodeID++; }
+    inline std::uint32_t GetNewPinID() { return m_NextPinID++; }
+    inline std::uint32_t GetNewLinkID() { return m_NextLinkID++; }
 
 private:
-    uint32_t m_NextNodeID = 0;
-    uint32_t m_NextPinID = 0;
-    uint32_t m_NextLinkID = 0;
+    std::uint32_t m_NextNodeID = 0;
+    std::uint32_t m_NextPinID = 0;
+    std::uint32_t m_NextLinkID = 0;
 
-    NodeIDQueue m_NodesToRegister;
-    NodeIDQueue m_NodesToDeregister;
-    NodeIDSet m_RegisteredNodes;
+    IDQueue m_NodesToRegister;
+    IDQueue m_NodesToDeregister;
+    IDSet m_RegisteredNodes;
     NodeDataMap m_NodeDataMap;
 
-    PinIDQueue m_PinsToRegister;
-    PinIDQueue m_PinsToDeregister;
-    PinIDSet m_RegisteredPins;
+    IDQueue m_PinsToRegister;
+    IDQueue m_PinsToDeregister;
+    IDSet m_RegisteredPins;
     PinDataMap m_PinDataMap;
 
-    LinkIDQueue m_LinksToRegister;
-    LinkIDQueue m_LinksToDeregister;
-    LinkIDSet m_RegisteredLinks;
+    IDQueue m_LinksToRegister;
+    IDQueue m_LinksToDeregister;
+    IDSet m_RegisteredLinks;
     LinkDataMap m_LinkDataMap;
 };

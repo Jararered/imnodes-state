@@ -44,7 +44,7 @@ void NodeManager::RenderState()
 
 void NodeManager::CreateNode()
 {
-    uint32_t nodeId = GetNewNodeID();
+    std::uint32_t nodeId = GetNewNodeID();
     std::string name = "Node (ID: " + std::to_string(nodeId) + ")";
 
     std::cout << "[NodeManager] Adding node id " << nodeId << " to register queue" << std::endl;
@@ -56,7 +56,7 @@ void NodeManager::CreateNode()
 
 void NodeManager::CreateNode(float x, float y)
 {
-    uint32_t nodeId = GetNewNodeID();
+    std::uint32_t nodeId = GetNewNodeID();
     std::string name = "Node (ID: " + std::to_string(nodeId) + ")";
 
     std::cout << "[NodeManager] Adding node id " << nodeId << " to register queue" << std::endl;
@@ -68,9 +68,7 @@ void NodeManager::CreateNode(float x, float y)
 
 void NodeManager::CreateNode(const std::string& name)
 {
-    uint32_t nodeId = GetNewNodeID();
-
-    std::cout << "[NodeManager] Adding node id " << nodeId << " to register queue" << std::endl;
+    std::uint32_t nodeId = GetNewNodeID();
     m_NodesToRegister.push(nodeId);
 
     std::cout << "[NodeManager] Adding node id " << nodeId << " data to node data map" << std::endl;
@@ -90,7 +88,7 @@ void NodeManager::CreateNode(const std::string& name, float x, float y)
 
 void NodeManager::CreateLink(uint32_t pin1Id, uint32_t pin2Id)
 {
-    uint32_t linkId = GetNewLinkID();
+    std::uint32_t linkId = GetNewLinkID();
 
     // Check if pin1 ID is registered
     if (m_RegisteredPins.find(pin1Id) == m_RegisteredPins.end())
@@ -121,10 +119,9 @@ void NodeManager::CreateLink(uint32_t pin1Id, uint32_t pin2Id)
     m_LinkDataMap[linkId] = LinkData{Pin1ID : pin1Id, Pin2ID : pin2Id};
 }
 
-void NodeManager::CreatePin(uint32_t nodeId, PinType pinType)
+void NodeManager::CreatePin(std::uint32_t nodeId, PinType pinType)
 {
-    uint32_t pinId = GetNewPinID();
-
+    std::uint32_t pinId = GetNewPinID();
     std::string name = "Pin (ID: " + std::to_string(pinId) + ")";
 
     // Check if node ID is registered
@@ -154,7 +151,7 @@ void NodeManager::CreatePin(uint32_t nodeId, PinType pinType)
     m_PinDataMap[pinId] = PinData{Name : name, NodeID : nodeId, Type : pinType};
 }
 
-void NodeManager::RemoveNode(uint32_t nodeId)
+void NodeManager::RemoveNode(std::uint32_t nodeId)
 {
     // Check if node ID is registered
     if (m_RegisteredNodes.find(nodeId) == m_RegisteredNodes.end())
@@ -207,7 +204,7 @@ void NodeManager::RemoveNode(uint32_t nodeId)
     m_NodesToDeregister.push(nodeId);
 }
 
-void NodeManager::RemoveNodes(const NodeIDSet& nodeIds)
+void NodeManager::RemoveNodes(const IDSet& nodeIds)
 {
     for (const auto& nodeId : nodeIds)
     {
@@ -216,7 +213,7 @@ void NodeManager::RemoveNodes(const NodeIDSet& nodeIds)
     }
 }
 
-void NodeManager::RemoveLink(uint32_t linkId)
+void NodeManager::RemoveLink(std::uint32_t linkId)
 {
     // Check if link ID is registered
     if (m_RegisteredLinks.find(linkId) == m_RegisteredLinks.end())
@@ -229,7 +226,7 @@ void NodeManager::RemoveLink(uint32_t linkId)
     m_LinksToDeregister.push(linkId);
 }
 
-void NodeManager::RemoveLinks(const LinkIDSet& linkIds)
+void NodeManager::RemoveLinks(const IDSet& linkIds)
 {
     for (const auto& linkId : linkIds)
     {
@@ -238,7 +235,7 @@ void NodeManager::RemoveLinks(const LinkIDSet& linkIds)
     }
 }
 
-void NodeManager::RemovePin(uint32_t nodeId, uint32_t pinId)
+void NodeManager::RemovePin(std::uint32_t nodeId, std::uint32_t pinId)
 {
     // Check if pin ID is registered
     if (m_RegisteredPins.find(pinId) == m_RegisteredPins.end())
@@ -262,9 +259,9 @@ void NodeManager::RemovePin(uint32_t nodeId, uint32_t pinId)
     m_PinsToDeregister.push(pinId);
 }
 
-void NodeManager::CreatePin(uint32_t nodeId, PinType pinType, const std::string& name)
+void NodeManager::CreatePin(std::uint32_t nodeId, PinType pinType, const std::string& name)
 {
-    uint32_t pinId = GetNewPinID();
+    std::uint32_t pinId = GetNewPinID();
 
     // Check if node ID is registered
     if (m_RegisteredNodes.find(nodeId) == m_RegisteredNodes.end())
@@ -275,37 +272,10 @@ void NodeManager::CreatePin(uint32_t nodeId, PinType pinType, const std::string&
 
     std::cout << "[NodeManager] Adding pin id " << pinId << " to register queue" << std::endl;
     m_PinsToRegister.push(pinId);
-
-    std::cout << "[NodeManager] Adding pin id " << pinId << " data to pin data map" << std::endl;
-    m_PinDataMap[pinId] = PinData{name, nodeId, pinType};
+    m_PinDataMap[pinId] = PinData{Name : name, NodeID : nodeId, Type : pinType};
 }
 
-const NodeIDSet& NodeManager::GetRegisteredNodes() const
-{
-    return m_RegisteredNodes;
-}
-
-const NodeData& NodeManager::GetNodeData(uint32_t nodeId) const
-{
-    return m_NodeDataMap.at(nodeId);
-}
-
-const PinData& NodeManager::GetPinData(uint32_t pinId) const
-{
-    return m_PinDataMap.at(pinId);
-}
-
-const LinkIDSet& NodeManager::GetRegisteredLinks() const
-{
-    return m_RegisteredLinks;
-}
-
-const LinkData& NodeManager::GetLinkData(uint32_t linkId) const
-{
-    return m_LinkDataMap.at(linkId);
-}
-
-void NodeManager::RegisterNode(uint32_t nodeId)
+void NodeManager::RegisterNode(std::uint32_t nodeId)
 {
     // Check if node ID is already registered
     if (m_RegisteredNodes.find(nodeId) != m_RegisteredNodes.end())
@@ -318,7 +288,7 @@ void NodeManager::RegisterNode(uint32_t nodeId)
     m_NodesToRegister.push(nodeId);
 }
 
-void NodeManager::RegisterPin(uint32_t pinId)
+void NodeManager::RegisterPin(std::uint32_t pinId)
 {
     // Check if pin ID is already registered
     if (m_RegisteredPins.find(pinId) != m_RegisteredPins.end())
@@ -331,7 +301,7 @@ void NodeManager::RegisterPin(uint32_t pinId)
     m_PinsToRegister.push(pinId);
 }
 
-void NodeManager::RegisterLink(uint32_t linkId)
+void NodeManager::RegisterLink(std::uint32_t linkId)
 {
     // Check if link ID is already registered
     if (m_RegisteredLinks.find(linkId) != m_RegisteredLinks.end())
@@ -344,7 +314,7 @@ void NodeManager::RegisterLink(uint32_t linkId)
     m_LinksToRegister.push(linkId);
 }
 
-void NodeManager::DeregisterNode(uint32_t nodeId)
+void NodeManager::DeregisterNode(std::uint32_t nodeId)
 {
     // Check if node ID is registered
     if (m_RegisteredNodes.find(nodeId) == m_RegisteredNodes.end())
@@ -357,7 +327,7 @@ void NodeManager::DeregisterNode(uint32_t nodeId)
     m_NodesToDeregister.push(nodeId);
 }
 
-void NodeManager::DeregisterPin(uint32_t pinId)
+void NodeManager::DeregisterPin(std::uint32_t pinId)
 {
     // Check if pin ID is registered
     if (m_RegisteredPins.find(pinId) == m_RegisteredPins.end())
@@ -370,7 +340,7 @@ void NodeManager::DeregisterPin(uint32_t pinId)
     m_PinsToDeregister.push(pinId);
 }
 
-void NodeManager::DeregisterLink(uint32_t linkId)
+void NodeManager::DeregisterLink(std::uint32_t linkId)
 {
     // Check if link ID is registered
     if (m_RegisteredLinks.find(linkId) == m_RegisteredLinks.end())
@@ -394,7 +364,7 @@ void NodeManager::ProcessNodeQueues()
 {
     while (!m_NodesToRegister.empty())
     {
-        uint32_t nodeId = m_NodesToRegister.front();
+        std::uint32_t nodeId = m_NodesToRegister.front();
 
         std::cout << "[NodeManager] Removing node id " << nodeId << " from register queue" << std::endl;
         m_NodesToRegister.pop();
@@ -405,7 +375,7 @@ void NodeManager::ProcessNodeQueues()
 
     while (!m_NodesToDeregister.empty())
     {
-        uint32_t nodeId = m_NodesToDeregister.front();
+        std::uint32_t nodeId = m_NodesToDeregister.front();
 
         std::cout << "[NodeManager] Removing node id " << nodeId << " from deregister queue" << std::endl;
         m_NodesToDeregister.pop();
@@ -423,7 +393,7 @@ void NodeManager::ProcessPinQueues()
 {
     while (!m_PinsToRegister.empty())
     {
-        uint32_t pinId = m_PinsToRegister.front();
+        std::uint32_t pinId = m_PinsToRegister.front();
 
         std::cout << "[NodeManager] Removing pin id " << pinId << " from register queue" << std::endl;
         m_PinsToRegister.pop();
@@ -434,7 +404,7 @@ void NodeManager::ProcessPinQueues()
 
     while (!m_PinsToDeregister.empty())
     {
-        uint32_t pinId = m_PinsToDeregister.front();
+        std::uint32_t pinId = m_PinsToDeregister.front();
 
         std::cout << "[NodeManager] Removing pin id " << pinId << " from deregister queue" << std::endl;
         m_PinsToDeregister.pop();
@@ -452,7 +422,7 @@ void NodeManager::ProcessLinkQueues()
 {
     while (!m_LinksToRegister.empty())
     {
-        uint32_t linkId = m_LinksToRegister.front();
+        std::uint32_t linkId = m_LinksToRegister.front();
 
         std::cout << "[NodeManager] Removing link id " << linkId << " from register queue" << std::endl;
         m_LinksToRegister.pop();
@@ -463,7 +433,7 @@ void NodeManager::ProcessLinkQueues()
 
     while (!m_LinksToDeregister.empty())
     {
-        uint32_t linkId = m_LinksToDeregister.front();
+        std::uint32_t linkId = m_LinksToDeregister.front();
 
         std::cout << "[NodeManager] Removing link id " << linkId << " from deregister queue" << std::endl;
         m_LinksToDeregister.pop();
@@ -475,19 +445,4 @@ void NodeManager::ProcessLinkQueues()
         std::cout << "[NodeManager] Removing link id " << linkId << " data from link data map" << std::endl;
         m_LinkDataMap.erase(linkId);
     }
-}
-
-uint32_t NodeManager::GetNewNodeID()
-{
-    return m_NextNodeID++;
-}
-
-uint32_t NodeManager::GetNewPinID()
-{
-    return m_NextPinID++;
-}
-
-uint32_t NodeManager::GetNewLinkID()
-{
-    return m_NextLinkID++;
 }

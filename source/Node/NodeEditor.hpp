@@ -40,10 +40,14 @@ public:
 private:
     NodeManager m_NodeManager;
 
-    NodeIDSet m_SelectedNodes;
-    LinkIDSet m_SelectedLinks;
+    IDSet m_SelectedNodes;
+    IDSet m_SelectedLinks;
 
-    uint32_t m_HoveredNodeID;
-    uint32_t m_HoveredLinkID;
-    uint32_t m_HoveredPinID;
+    std::int32_t m_HoveredNodeID;
+    std::int32_t m_HoveredLinkID;
+    std::int32_t m_HoveredPinID;
+
+    std::int32_t m_ClickedNodeID;
+    std::int32_t m_ClickedLinkID;
+    std::int32_t m_ClickedPinID;
 };
