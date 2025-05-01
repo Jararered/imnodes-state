@@ -8,7 +8,6 @@ public:
     NodeManager() = default;
     ~NodeManager() = default;
 
-    void Render();
     void Update();
 
     void CreateNode();
