@@ -74,11 +74,11 @@ void Window::Initialize()
 
 void Window::Update()
 {
-    glfwPollEvents();
-
     NewFrame();
     Render();
     EndFrame();
+
+    glfwPollEvents();
 }
 
 void Window::NewFrame()
@@ -101,8 +101,8 @@ void Window::Render()
 
     for (const auto& [name, layer] : m_Layers)
     {
-        layer->Update();
         layer->Render();
+        layer->Update();
     }
 
     ImGui::End();
