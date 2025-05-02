@@ -345,16 +345,6 @@ void NodeEditor::RenderContextMenu()
 
     if (ImGui::BeginPopupContextWindow("PinContextMenu"))
     {
-        // if (ImGui::BeginMenu("Set Data Type"))
-        // {
-        //     if (ImGui::MenuItem("Float"))
-        //     {
-        //     }
-        //     ImGui::EndMenu();
-        // }
-
-        // ImGui::Separator();
-
         if (ImGui::BeginMenu("Set Color"))
         {
             for (const auto& [colorName, colorData] : ColorDataPresets)
