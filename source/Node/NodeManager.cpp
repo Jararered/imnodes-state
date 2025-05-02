@@ -41,19 +41,14 @@ void NodeManager::CreateNode(const std::string& name, float x, float y)
 
 void NodeManager::CreateLink(std::uint32_t pin1Id, std::uint32_t pin2Id)
 {
-    std::uint32_t linkId = GetNewLinkID();
-
     // Check if pin1 ID is registered
-    if (m_RegisteredPins.find(pin1Id) == m_RegisteredPins.end())
+    if (m_RegisteredPins.find(pin1Id) == m_RegisteredPins.end() or
+        m_RegisteredPins.find(pin2Id) == m_RegisteredPins.end())
     {
         return;
     }
 
-    // Check if pin2 ID is registered
-    if (m_RegisteredPins.find(pin2Id) == m_RegisteredPins.end())
-    {
-        return;
-    }
+    std::uint32_t linkId = GetNewLinkID();
 
     // Get pin data for pin1 and pin2
     auto& pin1Data = m_PinDataMap.at(pin1Id);
@@ -69,14 +64,14 @@ void NodeManager::CreateLink(std::uint32_t pin1Id, std::uint32_t pin2Id)
 
 void NodeManager::CreatePin(std::uint32_t nodeId, PinType pinType)
 {
-    std::uint32_t pinId = GetNewPinID();
-    std::string name = "Pin (ID: " + std::to_string(pinId) + ")";
-
     // Check if node ID is registered
     if (m_RegisteredNodes.find(nodeId) == m_RegisteredNodes.end())
     {
         return;
     }
+
+    std::uint32_t pinId = GetNewPinID();
+    std::string name = "Pin (ID: " + std::to_string(pinId) + ")";
 
     // Find node data and add pin to either inputs or outputs
     auto& nodeData = m_NodeDataMap.at(nodeId);
@@ -162,13 +157,8 @@ void NodeManager::RemoveLinks(const IDSet& linkIds)
 void NodeManager::RemovePin(std::uint32_t nodeId, std::uint32_t pinId)
 {
     // Check if pin ID is registered
-    if (m_RegisteredPins.find(pinId) == m_RegisteredPins.end())
-    {
-        return;
-    }
-
-    // Check if node ID is registered
-    if (m_RegisteredNodes.find(nodeId) == m_RegisteredNodes.end())
+    if (m_RegisteredPins.find(pinId) == m_RegisteredPins.end() or
+        m_RegisteredNodes.find(nodeId) == m_RegisteredNodes.end())
     {
         return;
     }
@@ -182,13 +172,13 @@ void NodeManager::RemovePin(std::uint32_t nodeId, std::uint32_t pinId)
 
 void NodeManager::CreatePin(std::uint32_t nodeId, PinType pinType, const std::string& name)
 {
-    std::uint32_t pinId = GetNewPinID();
-
     // Check if node ID is registered
     if (m_RegisteredNodes.find(nodeId) == m_RegisteredNodes.end())
     {
         return;
     }
+
+    std::uint32_t pinId = GetNewPinID();
 
     m_PinsToRegister.push(pinId);
     m_PinDataMap[pinId] = PinData{.Name = name, .NodeID = nodeId, .Type = pinType};
@@ -272,21 +262,15 @@ void NodeManager::ProcessNodeQueues()
     while (!m_NodesToRegister.empty())
     {
         std::uint32_t nodeId = m_NodesToRegister.front();
-
         m_NodesToRegister.pop();
-
         m_RegisteredNodes.insert(nodeId);
     }
 
     while (!m_NodesToDeregister.empty())
     {
         std::uint32_t nodeId = m_NodesToDeregister.front();
-
         m_NodesToDeregister.pop();
-
         m_RegisteredNodes.erase(nodeId);
-
-        // Remove node data from node data map
         m_NodeDataMap.erase(nodeId);
     }
 }
@@ -296,21 +280,15 @@ void NodeManager::ProcessPinQueues()
     while (!m_PinsToRegister.empty())
     {
         std::uint32_t pinId = m_PinsToRegister.front();
-
         m_PinsToRegister.pop();
-
         m_RegisteredPins.insert(pinId);
     }
 
     while (!m_PinsToDeregister.empty())
     {
         std::uint32_t pinId = m_PinsToDeregister.front();
-
         m_PinsToDeregister.pop();
-
         m_RegisteredPins.erase(pinId);
-
-        // Remove pin data from pin data map
         m_PinDataMap.erase(pinId);
     }
 }
@@ -320,21 +298,15 @@ void NodeManager::ProcessLinkQueues()
     while (!m_LinksToRegister.empty())
     {
         std::uint32_t linkId = m_LinksToRegister.front();
-
         m_LinksToRegister.pop();
-
         m_RegisteredLinks.insert(linkId);
     }
 
     while (!m_LinksToDeregister.empty())
     {
         std::uint32_t linkId = m_LinksToDeregister.front();
-
         m_LinksToDeregister.pop();
-
         m_RegisteredLinks.erase(linkId);
-
-        // Remove link data from link data map
         m_LinkDataMap.erase(linkId);
     }
 }
@@ -414,6 +386,7 @@ void NodeManager::LoadNodeConfiguration(const std::string& filePath)
     {
         std::uint32_t pin1Id = link.attribute("pin1").as_uint();
         std::uint32_t pin2Id = link.attribute("pin2").as_uint();
+
         CreateLink(pin1Id, pin2Id);
     }
 }
