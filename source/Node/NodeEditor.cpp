@@ -381,6 +381,14 @@ void NodeEditor::RenderContextMenu()
             }
             ImGui::EndMenu();
         }
+
+        ImGui::Separator();
+
+        if (ImGui::MenuItem("Delete"))
+        {
+            m_NodeManager.RemoveLink(m_ClickedLinkID);
+        }
+
         ImGui::EndPopup();
     }
 
