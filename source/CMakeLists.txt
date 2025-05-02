@@ -4,7 +4,7 @@ add_executable(NodeSimulation main.cpp)
 
 target_include_directories(NodeSimulation PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
 
-target_link_libraries(NodeSimulation PRIVATE glad_gl glfw imgui)
+target_link_libraries(NodeSimulation PRIVATE glad_gl glfw imgui pugixml)
 
 add_subdirectory(Node)
 add_subdirectory(Simulation)

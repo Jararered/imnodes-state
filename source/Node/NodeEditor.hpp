@@ -21,6 +21,7 @@ private:
     void RenderState();
     void RenderToolTip();
     void RenderContextMenu();
+    void RenderMenuBar();
 
     void UpdateSelectedStates();
     void UpdateHoveredStates();

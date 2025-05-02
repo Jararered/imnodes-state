@@ -24,6 +24,9 @@ public:
     void RemoveLinks(const IDSet& linkIds);
     void RemovePin(std::uint32_t nodeId, std::uint32_t pinId);
 
+    void SaveNodeConfiguration(const std::string& filePath);
+    void LoadNodeConfiguration(const std::string& filePath);
+
     inline void SetNodeColor(std::uint32_t nodeId, ColorData colors) { m_NodeDataMap[nodeId].Colors = colors; }
     inline void SetLinkColor(std::uint32_t linkId, ColorData colors) { m_LinkDataMap[linkId].Colors = colors; }
     inline void SetPinColor(std::uint32_t pinId, ColorData colors) { m_PinDataMap[pinId].Colors = colors; }

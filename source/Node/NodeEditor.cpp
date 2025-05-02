@@ -9,6 +9,7 @@
 void NodeEditor::Render()
 {
     RenderNodeEditor();
+    RenderMenuBar();
 
     // Update states after rendering Node Editor
     ProcessLinkEvents();
@@ -466,4 +467,8 @@ void NodeEditor::RenderContextMenu()
 
         ImGui::EndPopup();
     }
+}
+
+void NodeEditor::RenderMenuBar()
+{
 }

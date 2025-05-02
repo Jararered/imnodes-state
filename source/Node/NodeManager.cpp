@@ -1,5 +1,7 @@
 #include "NodeManager.hpp"
 
+#include <pugixml.hpp>
+
 #include <iostream>
 
 void NodeManager::Update()
@@ -334,5 +336,84 @@ void NodeManager::ProcessLinkQueues()
 
         // Remove link data from link data map
         m_LinkDataMap.erase(linkId);
+    }
+}
+
+void NodeManager::SaveNodeConfiguration(const std::string& filePath)
+{
+    pugi::xml_document doc;
+    pugi::xml_node root = doc.append_child("NodeConfiguration");
+
+    for (const auto& [nodeId, nodeData] : m_NodeDataMap)
+    {
+        pugi::xml_node node = root.append_child("Node");
+        node.append_attribute("id") = nodeId;
+        node.append_attribute("name") = nodeData.Name.c_str();
+        node.append_attribute("x") = nodeData.Position.X;
+        node.append_attribute("y") = nodeData.Position.Y;
+    }
+
+    for (const auto& [pinId, pinData] : m_PinDataMap)
+    {
+        pugi::xml_node pin = root.append_child("Pin");
+        pin.append_attribute("id") = pinId;
+        pin.append_attribute("name") = pinData.Name.c_str();
+        pin.append_attribute("nodeId") = pinData.NodeID;
+        pin.append_attribute("type") = static_cast<int>(pinData.Type);
+    }
+
+    for (const auto& [linkId, linkData] : m_LinkDataMap)
+    {
+        pugi::xml_node link = root.append_child("Link");
+        link.append_attribute("id") = linkId;
+        link.append_attribute("pin1") = linkData.Pin1ID;
+        link.append_attribute("pin2") = linkData.Pin2ID;
+    }
+
+    doc.save_file(filePath.c_str());
+}
+
+void NodeManager::LoadNodeConfiguration(const std::string& filePath)
+{
+    pugi::xml_document doc;
+    pugi::xml_parse_result result = doc.load_file(filePath.c_str());
+    if (!result)
+    {
+        std::cerr << "Failed to load node configuration from file: " << filePath << std::endl;
+        return;
+    }
+
+    pugi::xml_node root = doc.child("NodeConfiguration");
+    if (!root)
+    {
+        std::cerr << "Invalid node configuration file: " << filePath << std::endl;
+        return;
+    }
+
+    for (pugi::xml_node node = root.child("Nodes"); node; node = node.next_sibling("Nodes"))
+    {
+        std::uint32_t nodeId = node.attribute("id").as_uint();
+        std::string name = node.attribute("name").as_string();
+        float x = node.attribute("x").as_float();
+        float y = node.attribute("y").as_float();
+
+        CreateNode(name, x, y);
+    }
+
+    for (pugi::xml_node pin = root.child("Pins"); pin; pin = pin.next_sibling("Pins"))
+    {
+        std::uint32_t pinId = pin.attribute("id").as_uint();
+        std::string name = pin.attribute("name").as_string();
+        std::uint32_t nodeId = pin.attribute("nodeId").as_uint();
+        PinType type = static_cast<PinType>(pin.attribute("type").as_int());
+
+        CreatePin(nodeId, type, name);
+    }
+
+    for (pugi::xml_node link = root.child("Links"); link; link = link.next_sibling("Links"))
+    {
+        std::uint32_t pin1Id = link.attribute("pin1").as_uint();
+        std::uint32_t pin2Id = link.attribute("pin2").as_uint();
+        CreateLink(pin1Id, pin2Id);
     }
 }
