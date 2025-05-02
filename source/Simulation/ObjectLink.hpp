@@ -2,7 +2,7 @@
 
 #include <Node/NodeTypes.hpp>
 
-enum class ObjectLinkType : uint8_t
+enum class ObjectLinkType : std::uint8_t
 {
     Unset = 0,
     Float = 1,

@@ -17,7 +17,6 @@ int main(void)
     window.Initialize();
 
     window.AddLayer(std::make_shared<MenuBar>());
-    // window.AddLayer(std::make_shared<NodeEditor>());
     window.AddLayer(std::make_shared<SimulationEditor>());
 
     while (!window.ShouldClose())

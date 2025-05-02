@@ -2,7 +2,7 @@
 
 #include <Node/NodeTypes.hpp>
 
-enum class ObjectPinType : uint8_t
+enum class ObjectPinType : std::uint8_t
 {
     Unset = 0,
     Float = 1,

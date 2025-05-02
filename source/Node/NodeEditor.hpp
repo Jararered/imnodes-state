@@ -13,37 +13,39 @@ public:
     void Update() override;
     void Render() override;
 
+private:
     void RenderNodeEditor();
     void RenderNodes();
     void RenderLinks();
     void RenderMiniMap();
     void RenderState();
     void RenderToolTip();
+    void RenderContextMenu();
 
-    void UpdateSelectedState();
-    void UpdateSelectedNodes();
-    void UpdateSelectedLinks();
-
-    void UpdateHoveredState();
-    void UpdateHoveredNode();
-    void UpdateHoveredLink();
-    void UpdateHoveredPin();
+    void UpdateSelectedStates();
+    void UpdateHoveredStates();
+    void UpdateClickedStates();
 
     void ProcessLinkEvents();
-    void ProcessLayerEvents();
-    void ProcessNodeEvents();
 
-    bool IsNodeHovered();
-    bool IsLinkHovered();
-    bool IsPinHovered();
+    inline bool IsNodeHovered() const { return m_HoveredNodeID != -1; }
+    inline bool IsLinkHovered() const { return m_HoveredLinkID != -1; }
+    inline bool IsPinHovered() const { return m_HoveredPinID != -1; }
+
+    inline size_t NumSelectedNodes() const { return m_SelectedNodes.size(); }
+    inline size_t NumSelectedLinks() const { return m_SelectedLinks.size(); }
 
 private:
     NodeManager m_NodeManager;
 
-    NodeIDSet m_SelectedNodes;
-    LinkIDSet m_SelectedLinks;
+    IDSet m_SelectedNodes;
+    IDSet m_SelectedLinks;
 
-    uint32_t m_HoveredNodeID;
-    uint32_t m_HoveredLinkID;
-    uint32_t m_HoveredPinID;
+    std::int32_t m_HoveredNodeID;
+    std::int32_t m_HoveredLinkID;
+    std::int32_t m_HoveredPinID;
+
+    std::int32_t m_ClickedNodeID;
+    std::int32_t m_ClickedLinkID;
+    std::int32_t m_ClickedPinID;
 };

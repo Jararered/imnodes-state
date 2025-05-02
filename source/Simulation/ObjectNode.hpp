@@ -6,9 +6,9 @@
 
 struct ObjectNodeParameters
 {
-    uint32_t InitializeOrder = 0;
-    uint32_t UpdateOrder = 0;
-    uint32_t UpdateRate = 0;
+    std::uint32_t InitializeOrder = 0;
+    std::uint32_t UpdateOrder = 0;
+    std::uint32_t UpdateRate = 0;
 };
 
 class ObjectNode : public NodeData

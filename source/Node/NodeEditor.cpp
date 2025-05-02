@@ -6,101 +6,103 @@
 
 #include <iostream>
 
+void NodeEditor::Render()
+{
+    RenderNodeEditor();
+
+    // Update states after rendering Node Editor
+    ProcessLinkEvents();
+
+    UpdateSelectedStates();
+    UpdateHoveredStates();
+    UpdateClickedStates();
+
+    RenderState();
+    RenderToolTip();
+    RenderContextMenu();
+}
+
 void NodeEditor::Update()
 {
     m_NodeManager.Update();
-
-    UpdateSelectedState();
-    UpdateHoveredState();
 }
 
-void NodeEditor::UpdateSelectedState()
+void NodeEditor::ProcessLinkEvents()
 {
-    UpdateSelectedNodes();
-    UpdateSelectedLinks();
+    int inputId, outputId;
+    if (ImNodes::IsLinkCreated(&inputId, &outputId))
+    {
+        m_NodeManager.CreateLink(inputId, outputId);
+    }
 }
 
-void NodeEditor::UpdateSelectedNodes()
+void NodeEditor::UpdateSelectedStates()
 {
+    // This function can return a negative number if no nodes are selected
     int numSelectedNodes = ImNodes::NumSelectedNodes();
     if (numSelectedNodes < 0)
     {
         m_SelectedNodes.clear();
-        return;
     }
-
-    int selectedNodes[128] = {-1};
-    ImNodes::GetSelectedNodes(selectedNodes);
-    m_SelectedNodes.clear();
-    for (int i = 0; i < numSelectedNodes; i++)
+    else
     {
-        if (selectedNodes[i] > -1)
+        int selectedNodes[128] = {-1};
+        ImNodes::GetSelectedNodes(selectedNodes);
+        m_SelectedNodes.clear();
+        for (int i = 0; i < numSelectedNodes; i++)
         {
-            m_SelectedNodes.insert(selectedNodes[i]);
+            if (selectedNodes[i] > -1)
+            {
+                m_SelectedNodes.insert(selectedNodes[i]);
+            }
         }
     }
-}
 
-void NodeEditor::UpdateSelectedLinks()
-{
+    // This function can return a negative number if no links are selected
     int numSelectedLinks = ImNodes::NumSelectedLinks();
     if (numSelectedLinks < 0)
     {
         m_SelectedLinks.clear();
-        return;
     }
-
-    int selectedLinks[128] = {-1};
-    ImNodes::GetSelectedLinks(selectedLinks);
-    m_SelectedLinks.clear();
-    for (int i = 0; i < numSelectedLinks; i++)
+    else
     {
-        if (selectedLinks[i] > -1)
+        int selectedLinks[128] = {-1};
+        ImNodes::GetSelectedLinks(selectedLinks);
+        m_SelectedLinks.clear();
+        for (int i = 0; i < numSelectedLinks; i++)
         {
-            m_SelectedLinks.insert(selectedLinks[i]);
+            if (selectedLinks[i] > -1)
+            {
+                m_SelectedLinks.insert(selectedLinks[i]);
+            }
         }
     }
 }
 
-void NodeEditor::UpdateHoveredState()
-{
-    UpdateHoveredNode();
-    UpdateHoveredLink();
-    UpdateHoveredPin();
-}
-
-void NodeEditor::UpdateHoveredNode()
+void NodeEditor::UpdateHoveredStates()
 {
     int hoveredNode = -1;
     ImNodes::IsNodeHovered(&hoveredNode);
     m_HoveredNodeID = hoveredNode;
-}
 
-void NodeEditor::UpdateHoveredLink()
-{
     int hoveredLink = -1;
     ImNodes::IsLinkHovered(&hoveredLink);
     m_HoveredLinkID = hoveredLink;
-}
 
-void NodeEditor::UpdateHoveredPin()
-{
     int hoveredPin = -1;
     ImNodes::IsPinHovered(&hoveredPin);
     m_HoveredPinID = hoveredPin;
 }
 
-void NodeEditor::Render()
+void NodeEditor::UpdateClickedStates()
 {
-    m_NodeManager.Render();
-
-    RenderNodeEditor();
-    RenderState();
-    RenderToolTip();
-
-    ProcessLinkEvents();
-    ProcessLayerEvents();
-    ProcessNodeEvents();
+    bool isRightClick = ImGui::IsMouseClicked(ImGuiMouseButton_Right);
+    if (isRightClick)
+    {
+        m_ClickedNodeID = m_HoveredNodeID;
+        m_ClickedLinkID = m_HoveredLinkID;
+        m_ClickedPinID = m_HoveredPinID;
+    }
 }
 
 void NodeEditor::RenderNodeEditor()
@@ -121,36 +123,66 @@ void NodeEditor::RenderNodes()
     for (const auto& nodeId : m_NodeManager.GetRegisteredNodes())
     {
         const auto& nodePos = m_NodeManager.GetNodeData(nodeId).Position;
-        ImVec2 nodePosVec = ImVec2(nodePos.first, nodePos.second);
+        ImVec2 nodePosVec = ImVec2(nodePos.X, nodePos.Y);
         // ImNodes::SetNodeScreenSpacePos(nodeId, nodePosVec);
 
         ImNodes::BeginNode(nodeId);
+
+        ColorData colors = m_NodeManager.GetNodeData(nodeId).Colors;
+
+        ImNodes::PushColorStyle(ImNodesCol_TitleBar, colors.NormalColor);
+        ImNodes::PushColorStyle(ImNodesCol_TitleBarHovered, colors.HoverColor);
+        ImNodes::PushColorStyle(ImNodesCol_TitleBarSelected, colors.SelectedColor);
 
         ImNodes::BeginNodeTitleBar();
         ImGui::TextUnformatted(m_NodeManager.GetNodeData(nodeId).Name.c_str());
         ImNodes::EndNodeTitleBar();
 
-        const auto& inputIDs = m_NodeManager.GetNodeData(nodeId).InputIDs;
+        ImNodes::PopColorStyle();
+        ImNodes::PopColorStyle();
+        ImNodes::PopColorStyle();
+
         const auto& outputIDs = m_NodeManager.GetNodeData(nodeId).OutputIDs;
+        const auto& inputIDs = m_NodeManager.GetNodeData(nodeId).InputIDs;
 
         // This is required as ImGui does not use the titlebar as a unique identifier
         if (inputIDs.size() == 0 && outputIDs.size() == 0)
         {
             ImGui::Dummy(ImVec2(0, 0));
+
+            // End node early to avoid drawing pins
+            ImNodes::EndNode();
+            continue;
         }
 
         for (const auto& inputID : inputIDs)
         {
+            ColorData colors = m_NodeManager.GetPinData(inputID).Colors;
+
+            ImNodes::PushColorStyle(ImNodesCol_Pin, colors.NormalColor);
+            ImNodes::PushColorStyle(ImNodesCol_PinHovered, colors.HoverColor);
+
             ImNodes::BeginInputAttribute(inputID);
             ImGui::TextUnformatted(m_NodeManager.GetPinData(inputID).Name.c_str());
             ImNodes::EndInputAttribute();
+
+            ImNodes::PopColorStyle();
+            ImNodes::PopColorStyle();
         }
 
         for (const auto& outputID : outputIDs)
         {
+            ColorData colors = m_NodeManager.GetPinData(outputID).Colors;
+
+            ImNodes::PushColorStyle(ImNodesCol_Pin, colors.NormalColor);
+            ImNodes::PushColorStyle(ImNodesCol_PinHovered, colors.HoverColor);
+
             ImNodes::BeginOutputAttribute(outputID);
             ImGui::TextUnformatted(m_NodeManager.GetPinData(outputID).Name.c_str());
             ImNodes::EndOutputAttribute();
+
+            ImNodes::PopColorStyle();
+            ImNodes::PopColorStyle();
         }
 
         ImNodes::EndNode();
@@ -159,11 +191,20 @@ void NodeEditor::RenderNodes()
 
 void NodeEditor::RenderLinks()
 {
-
     for (const auto& linkId : m_NodeManager.GetRegisteredLinks())
     {
         const auto& linkData = m_NodeManager.GetLinkData(linkId);
+        ColorData colors = linkData.Colors;
+
+        ImNodes::PushColorStyle(ImNodesCol_Link, colors.NormalColor);
+        ImNodes::PushColorStyle(ImNodesCol_LinkHovered, colors.HoverColor);
+        ImNodes::PushColorStyle(ImNodesCol_LinkSelected, colors.SelectedColor);
+
         ImNodes::Link(linkId, linkData.Pin1ID, linkData.Pin2ID);
+
+        ImNodes::PopColorStyle();
+        ImNodes::PopColorStyle();
+        ImNodes::PopColorStyle();
     }
 }
 
@@ -234,97 +275,64 @@ void NodeEditor::RenderState()
     ImGui::Text(hoveredLinkString.c_str());
     ImGui::Text(hoveredPinString.c_str());
 
+    ImGui::Separator();
+
+    ImGui::Text("Clicked Node ID: %d", m_ClickedNodeID);
+    ImGui::Text("Clicked Link ID: %d", m_ClickedLinkID);
+    ImGui::Text("Clicked Pin ID: %d", m_ClickedPinID);
+
     ImGui::End();
 }
 
 void NodeEditor::RenderToolTip()
 {
     // Hovered pin takes pri
-    if (m_HoveredPinID != -1)
+    if (IsPinHovered())
     {
         ImGui::BeginTooltip();
         ImGui::Text("Pin ID: %d", m_HoveredPinID);
         ImGui::EndTooltip();
     }
-    else if (m_HoveredNodeID != -1)
-    {
-        ImGui::BeginTooltip();
-        ImGui::Text("Node ID: %d", m_HoveredNodeID);
-        ImGui::EndTooltip();
-    }
-    else if (m_HoveredLinkID != -1)
+    else if (IsLinkHovered())
     {
         ImGui::BeginTooltip();
         ImGui::Text("Link ID: %d", m_HoveredLinkID);
         ImGui::EndTooltip();
     }
-}
-
-void NodeEditor::ProcessLinkEvents()
-{
-    int inputId, outputId;
-    if (ImNodes::IsLinkCreated(&inputId, &outputId))
+    else if (IsNodeHovered())
     {
-        m_NodeManager.CreateLink(inputId, outputId);
-    }
-
-    bool isMouseRightClicked = ImGui::IsMouseClicked(ImGuiMouseButton_Right);
-    if (isMouseRightClicked)
-    {
-        int numSelectedLinks = m_SelectedLinks.size();
-        int numSelectedNodes = m_SelectedNodes.size();
-        bool isLinkHovered = IsLinkHovered();
-        if (numSelectedLinks > 0 && numSelectedNodes == 0 && isLinkHovered)
-        {
-            if (numSelectedLinks == 1)
-            {
-                ImGui::OpenPopup("SingleLinkContextMenu");
-            }
-
-            if (numSelectedLinks > 1)
-            {
-                ImGui::OpenPopup("MultiLinkContextMenu");
-            }
-        }
-    }
-
-    if (ImGui::BeginPopup("SingleLinkContextMenu"))
-    {
-        if (ImGui::MenuItem("Delete"))
-        {
-            m_NodeManager.RemoveLinks(m_SelectedLinks);
-        }
-
-        ImGui::EndPopup();
-    }
-
-    if (ImGui::BeginPopup("MultiLinkContextMenu"))
-    {
-        std::string itemName = "Delete " + std::to_string(m_SelectedLinks.size()) + " links";
-        if (ImGui::MenuItem(itemName.c_str()))
-        {
-            m_NodeManager.RemoveLinks(m_SelectedLinks);
-        }
-
-        ImGui::EndPopup();
+        ImGui::BeginTooltip();
+        ImGui::Text("Node ID: %d", m_HoveredNodeID);
+        ImGui::EndTooltip();
     }
 }
 
-void NodeEditor::ProcessLayerEvents()
+void NodeEditor::RenderContextMenu()
 {
-    // Layer Right Click - Show Context Menu
-    bool isNothingHovered = m_HoveredNodeID == -1 && m_HoveredLinkID == -1 && m_HoveredPinID == -1;
-    if (ImGui::IsMouseClicked(ImGuiMouseButton_Right) && isNothingHovered)
+    bool isRightClick = ImGui::IsMouseClicked(ImGuiMouseButton_Right);
+    bool isPinHovered = IsPinHovered();
+    bool isLinkHovered = IsLinkHovered();
+    bool isNodeHovered = IsNodeHovered();
+
+    if (isRightClick && !isPinHovered && !isLinkHovered && !isNodeHovered)
     {
-        // Make sure no nodes are hovered
-        if (m_HoveredNodeID == -1)
-        {
-            ImGui::OpenPopup("LayerContextMenu");
-        }
+        ImGui::OpenPopup("EditorContextMenu");
     }
 
-    // Show Context Menu
-    if (ImGui::BeginPopupContextWindow("LayerContextMenu"))
+    if (isRightClick && isPinHovered)
+    {
+        ImGui::OpenPopup("PinContextMenu");
+    }
+    else if (isRightClick && isLinkHovered)
+    {
+        ImGui::OpenPopup("LinkContextMenu");
+    }
+    else if (isRightClick && isNodeHovered)
+    {
+        ImGui::OpenPopup("NodeContextMenu");
+    }
+
+    if (ImGui::BeginPopupContextWindow("EditorContextMenu"))
     {
         if (ImGui::MenuItem("Add Node"))
         {
@@ -333,61 +341,76 @@ void NodeEditor::ProcessLayerEvents()
         }
         ImGui::EndPopup();
     }
-}
 
-void NodeEditor::ProcessNodeEvents()
-{
-    int numSelectedNodes = m_SelectedNodes.size();
-
-    // Node Right Click - Show Context Menu
-    bool isRightClick = ImGui::IsMouseClicked(ImGuiMouseButton_Right);
-    bool isNodeHovered = IsNodeHovered();
-    if (isRightClick && isNodeHovered)
+    if (ImGui::BeginPopupContextWindow("PinContextMenu"))
     {
-        // Make sure only one node is selected
-        if (numSelectedNodes == 1)
-        {
-            int selectedNodeId = *m_SelectedNodes.begin();
-            int hoveredNodeId = m_HoveredNodeID;
-            if (selectedNodeId == hoveredNodeId)
-            {
-                ImGui::OpenPopup("SingleNodeContextMenu");
-            }
-        }
+        // if (ImGui::BeginMenu("Set Data Type"))
+        // {
+        //     if (ImGui::MenuItem("Float"))
+        //     {
+        //     }
+        //     ImGui::EndMenu();
+        // }
 
-        if (numSelectedNodes > 1)
+        // ImGui::Separator();
+
+        if (ImGui::BeginMenu("Set Color"))
         {
-            ImGui::OpenPopup("MultiNodeContextMenu");
+            for (const auto& [colorName, colorData] : ColorDataPresets)
+            {
+                if (ImGui::MenuItem(colorName.c_str()))
+                {
+                    m_NodeManager.SetPinColor(m_ClickedPinID, colorData);
+                }
+            }
+            ImGui::EndMenu();
         }
+        ImGui::EndPopup();
     }
 
-    if (ImGui::BeginPopupContextWindow("SingleNodeContextMenu"))
+    if (ImGui::BeginPopupContextWindow("LinkContextMenu"))
     {
-        int selectedNodeId = *m_SelectedNodes.begin();
+        if (ImGui::BeginMenu("Set Color"))
+        {
+            for (const auto& [colorName, colorData] : ColorDataPresets)
+            {
+                if (ImGui::MenuItem(colorName.c_str()))
+                {
+                    m_NodeManager.SetLinkColor(m_ClickedLinkID, colorData);
+                }
+            }
+            ImGui::EndMenu();
+        }
+        ImGui::EndPopup();
+    }
+
+    if (ImGui::BeginPopupContextWindow("NodeContextMenu"))
+    {
+        int clickedNodeId = m_ClickedNodeID;
         if (ImGui::BeginMenu("Pins"))
         {
             if (ImGui::MenuItem("Add Input"))
             {
-                m_NodeManager.CreatePin(selectedNodeId, PinType::Input);
+                m_NodeManager.CreatePin(clickedNodeId, PinType::Input);
             }
 
             if (ImGui::MenuItem("Add Output"))
             {
-                m_NodeManager.CreatePin(selectedNodeId, PinType::Output);
+                m_NodeManager.CreatePin(clickedNodeId, PinType::Output);
             }
             ImGui::EndMenu();
         }
 
-        bool hasInputs = m_NodeManager.GetNodeData(selectedNodeId).InputIDs.size() > 0;
+        bool hasInputs = m_NodeManager.GetNodeData(clickedNodeId).InputIDs.size() > 0;
         if (hasInputs)
         {
             if (ImGui::BeginMenu("Inputs"))
             {
-                for (const auto& inputID : m_NodeManager.GetNodeData(selectedNodeId).InputIDs)
+                for (const auto& inputID : m_NodeManager.GetNodeData(clickedNodeId).InputIDs)
                 {
                     if (ImGui::MenuItem(m_NodeManager.GetPinData(inputID).Name.c_str()))
                     {
-                        m_NodeManager.RemovePin(selectedNodeId, inputID);
+                        m_NodeManager.RemovePin(clickedNodeId, inputID);
                     }
                 }
 
@@ -395,16 +418,16 @@ void NodeEditor::ProcessNodeEvents()
             }
         }
 
-        bool hasOutputs = m_NodeManager.GetNodeData(selectedNodeId).OutputIDs.size() > 0;
+        bool hasOutputs = m_NodeManager.GetNodeData(clickedNodeId).OutputIDs.size() > 0;
         if (hasOutputs)
         {
             if (ImGui::BeginMenu("Outputs"))
             {
-                for (const auto& outputID : m_NodeManager.GetNodeData(selectedNodeId).OutputIDs)
+                for (const auto& outputID : m_NodeManager.GetNodeData(clickedNodeId).OutputIDs)
                 {
                     if (ImGui::MenuItem(m_NodeManager.GetPinData(outputID).Name.c_str()))
                     {
-                        m_NodeManager.RemovePin(selectedNodeId, outputID);
+                        m_NodeManager.RemovePin(clickedNodeId, outputID);
                     }
                 }
 
@@ -414,38 +437,25 @@ void NodeEditor::ProcessNodeEvents()
 
         ImGui::Separator();
 
+        if (ImGui::BeginMenu("Set Color"))
+        {
+            for (const auto& [colorName, colorData] : ColorDataPresets)
+            {
+                if (ImGui::MenuItem(colorName.c_str()))
+                {
+                    m_NodeManager.SetNodeColor(clickedNodeId, colorData);
+                }
+            }
+            ImGui::EndMenu();
+        }
+
+        ImGui::Separator();
+
         if (ImGui::MenuItem("Delete"))
         {
-            m_NodeManager.RemoveNodes(m_SelectedNodes);
-        }
-
-        ImGui::EndPopup();
-    }
-
-    if (ImGui::BeginPopupContextWindow("MultiNodeContextMenu"))
-    {
-        std::string itemName = "Delete " + std::to_string(m_SelectedNodes.size()) + " nodes";
-        if (ImGui::MenuItem(itemName.c_str()))
-        {
-            m_NodeManager.RemoveNodes(m_SelectedNodes);
+            m_NodeManager.RemoveNode(clickedNodeId);
         }
 
         ImGui::EndPopup();
     }
 }
-
-bool NodeEditor::IsNodeHovered()
-{
-    return m_HoveredNodeID != -1;
-}
-
-bool NodeEditor::IsLinkHovered()
-{
-    return m_HoveredLinkID != -1;
-}
-
-bool NodeEditor::IsPinHovered()
-{
-    return m_HoveredPinID != -1;
-}
-
