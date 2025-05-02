@@ -14,7 +14,7 @@ void NodeManager::CreateNode()
     std::uint32_t nodeId = GetNewNodeID();
     std::string name = "Node (ID: " + std::to_string(nodeId) + ")";
     m_NodesToRegister.push(nodeId);
-    m_NodeDataMap[nodeId] = NodeData{Name : name};
+    m_NodeDataMap[nodeId] = NodeData{.Name = name};
 }
 
 void NodeManager::CreateNode(float x, float y)
@@ -22,21 +22,21 @@ void NodeManager::CreateNode(float x, float y)
     std::uint32_t nodeId = GetNewNodeID();
     std::string name = "Node (ID: " + std::to_string(nodeId) + ")";
     m_NodesToRegister.push(nodeId);
-    m_NodeDataMap[nodeId] = NodeData{Name : name, Position : {x, y}};
+    m_NodeDataMap[nodeId] = NodeData{.Name = name, .Position = {x, y}};
 }
 
 void NodeManager::CreateNode(const std::string& name)
 {
     std::uint32_t nodeId = GetNewNodeID();
     m_NodesToRegister.push(nodeId);
-    m_NodeDataMap[nodeId] = NodeData{Name : name};
+    m_NodeDataMap[nodeId] = NodeData{.Name = name};
 }
 
 void NodeManager::CreateNode(const std::string& name, float x, float y)
 {
     std::uint32_t nodeId = GetNewNodeID();
     m_NodesToRegister.push(nodeId);
-    m_NodeDataMap[nodeId] = NodeData{Name : name, Position : {x, y}};
+    m_NodeDataMap[nodeId] = NodeData{.Name = name, .Position = {x, y}};
 }
 
 void NodeManager::CreateLink(std::uint32_t pin1Id, std::uint32_t pin2Id)
@@ -64,7 +64,7 @@ void NodeManager::CreateLink(std::uint32_t pin1Id, std::uint32_t pin2Id)
     pin2Data.Links.insert(linkId);
 
     m_LinksToRegister.push(linkId);
-    m_LinkDataMap[linkId] = LinkData{Pin1ID : pin1Id, Pin2ID : pin2Id};
+    m_LinkDataMap[linkId] = LinkData{.Pin1ID = pin1Id, .Pin2ID = pin2Id};
 }
 
 void NodeManager::CreatePin(std::uint32_t nodeId, PinType pinType)
@@ -90,7 +90,7 @@ void NodeManager::CreatePin(std::uint32_t nodeId, PinType pinType)
     }
 
     m_PinsToRegister.push(pinId);
-    m_PinDataMap[pinId] = PinData{Name : name, NodeID : nodeId, Type : pinType};
+    m_PinDataMap[pinId] = PinData{.Name = name, .NodeID = nodeId, .Type = pinType};
 }
 
 void NodeManager::RemoveNode(std::uint32_t nodeId)
@@ -191,7 +191,7 @@ void NodeManager::CreatePin(std::uint32_t nodeId, PinType pinType, const std::st
     }
 
     m_PinsToRegister.push(pinId);
-    m_PinDataMap[pinId] = PinData{Name : name, NodeID : nodeId, Type : pinType};
+    m_PinDataMap[pinId] = PinData{.Name = name, .NodeID = nodeId, .Type = pinType};
 }
 
 void NodeManager::RegisterNode(std::uint32_t nodeId)
