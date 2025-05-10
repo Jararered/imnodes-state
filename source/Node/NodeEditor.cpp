@@ -15,7 +15,6 @@ void NodeEditor::Render()
     ProcessLinkEvents();
 
     UpdateSelectedStates();
-    UpdateHoveredStates();
     UpdateClickedStates();
 
     RenderState();
@@ -80,29 +79,30 @@ void NodeEditor::UpdateSelectedStates()
     }
 }
 
-void NodeEditor::UpdateHoveredStates()
-{
-    int hoveredNode = -1;
-    ImNodes::IsNodeHovered(&hoveredNode);
-    m_HoveredNodeID = hoveredNode;
-
-    int hoveredLink = -1;
-    ImNodes::IsLinkHovered(&hoveredLink);
-    m_HoveredLinkID = hoveredLink;
-
-    int hoveredPin = -1;
-    ImNodes::IsPinHovered(&hoveredPin);
-    m_HoveredPinID = hoveredPin;
-}
-
+// This function is called when the user clicks on the Node Editor.
+// It updates the clicked node, link, and pin IDs.
 void NodeEditor::UpdateClickedStates()
 {
-    bool isRightClick = ImGui::IsMouseClicked(ImGuiMouseButton_Right);
+    const bool isRightClick = ImGui::IsMouseClicked(ImGuiMouseButton_Right);
+
+    const auto hoveredNode = GetHoveredNode();
+    const auto hoveredLink = GetHoveredLink();
+    const auto hoveredPin = GetHoveredPin();
+
     if (isRightClick)
     {
-        m_ClickedNodeID = m_HoveredNodeID;
-        m_ClickedLinkID = m_HoveredLinkID;
-        m_ClickedPinID = m_HoveredPinID;
+        if (hoveredNode.has_value())
+        {
+            m_ClickedNodeID = hoveredNode.value();
+        }
+        if (hoveredLink.has_value())
+        {
+            m_ClickedLinkID = hoveredLink.value();
+        }
+        if (hoveredPin.has_value())
+        {
+            m_ClickedPinID = hoveredPin.value();
+        }
     }
 }
 
@@ -123,9 +123,9 @@ void NodeEditor::RenderNodes()
 {
     for (const auto& nodeId : m_NodeManager.GetRegisteredNodes())
     {
-        const auto& nodePos = m_NodeManager.GetNodeData(nodeId).Position;
-        ImVec2 nodePosVec = ImVec2(nodePos.X, nodePos.Y);
-        // ImNodes::SetNodeScreenSpacePos(nodeId, nodePosVec);
+        const auto& nodeGridPos = m_NodeManager.GetNodeData(nodeId).GridPosition;
+        ImVec2 nodeGridPosVec = ImVec2(nodeGridPos.X, nodeGridPos.Y);
+        ImNodes::SetNodeGridSpacePos(nodeId, nodeGridPosVec);
 
         ImNodes::BeginNode(nodeId);
 
@@ -253,23 +253,26 @@ void NodeEditor::RenderState()
 
     // Hovered Node
     std::string hoveredNodeString = "Hovered Node ID: ";
-    if (m_HoveredNodeID != -1)
+    const auto hoveredNode = GetHoveredNode();
+    if (hoveredNode.has_value())
     {
-        hoveredNodeString += std::to_string(m_HoveredNodeID);
+        hoveredNodeString += std::to_string(hoveredNode.value());
     }
 
     // Hovered Link
     std::string hoveredLinkString = "Hovered Link ID: ";
-    if (m_HoveredLinkID != -1)
+    const auto hoveredLink = GetHoveredLink();
+    if (hoveredLink.has_value())
     {
-        hoveredLinkString += std::to_string(m_HoveredLinkID);
+        hoveredLinkString += std::to_string(hoveredLink.value());
     }
 
     // Hovered Pin
     std::string hoveredPinString = "Hovered Pin ID: ";
-    if (m_HoveredPinID != -1)
+    const auto hoveredPin = GetHoveredPin();
+    if (hoveredPin.has_value())
     {
-        hoveredPinString += std::to_string(m_HoveredPinID);
+        hoveredPinString += std::to_string(hoveredPin.value());
     }
 
     ImGui::Text(hoveredNodeString.c_str());
@@ -278,42 +281,57 @@ void NodeEditor::RenderState()
 
     ImGui::Separator();
 
-    ImGui::Text("Clicked Node ID: %d", m_ClickedNodeID);
-    ImGui::Text("Clicked Link ID: %d", m_ClickedLinkID);
-    ImGui::Text("Clicked Pin ID: %d", m_ClickedPinID);
+    const auto clickedNodeLabel =
+        m_ClickedNodeID.has_value() ? "Clicked Node ID: " + std::to_string(m_ClickedNodeID.value()) : "No clicked node";
+    const auto clickedLinkLabel =
+        m_ClickedLinkID.has_value() ? "Clicked Link ID: " + std::to_string(m_ClickedLinkID.value()) : "No clicked link";
+    const auto clickedPinLabel =
+        m_ClickedPinID.has_value() ? "Clicked Pin ID: " + std::to_string(m_ClickedPinID.value()) : "No clicked pin";
+
+    ImGui::Text(clickedNodeLabel.c_str());
+    ImGui::Text(clickedLinkLabel.c_str());
+    ImGui::Text(clickedPinLabel.c_str());
 
     ImGui::End();
 }
 
 void NodeEditor::RenderToolTip()
 {
-    // Hovered pin takes pri
-    if (IsPinHovered())
+    const auto hoveredPin = GetHoveredPin();
+    const auto hoveredLink = GetHoveredLink();
+    const auto hoveredNode = GetHoveredNode();
+
+    if (hoveredPin.has_value())
     {
         ImGui::BeginTooltip();
-        ImGui::Text("Pin ID: %d", m_HoveredPinID);
+        ImGui::Text("Pin ID: %d", hoveredPin.value());
         ImGui::EndTooltip();
     }
-    else if (IsLinkHovered())
+    else if (hoveredLink.has_value())
     {
         ImGui::BeginTooltip();
-        ImGui::Text("Link ID: %d", m_HoveredLinkID);
+        ImGui::Text("Link ID: %d", hoveredLink.value());
         ImGui::EndTooltip();
     }
-    else if (IsNodeHovered())
+    else if (hoveredNode.has_value())
     {
         ImGui::BeginTooltip();
-        ImGui::Text("Node ID: %d", m_HoveredNodeID);
+        ImGui::Text("Node ID: %d", hoveredNode.value());
         ImGui::EndTooltip();
     }
 }
 
 void NodeEditor::RenderContextMenu()
 {
-    bool isRightClick = ImGui::IsMouseClicked(ImGuiMouseButton_Right);
-    bool isPinHovered = IsPinHovered();
-    bool isLinkHovered = IsLinkHovered();
-    bool isNodeHovered = IsNodeHovered();
+    const auto hoveredPin = GetHoveredPin();
+    const auto hoveredLink = GetHoveredLink();
+    const auto hoveredNode = GetHoveredNode();
+
+    const bool isRightClick = ImGui::IsMouseClicked(ImGuiMouseButton_Right);
+
+    const bool isPinHovered = hoveredPin.has_value();
+    const bool isLinkHovered = hoveredLink.has_value();
+    const bool isNodeHovered = hoveredNode.has_value();
 
     if (isRightClick && !isPinHovered && !isLinkHovered && !isNodeHovered)
     {
@@ -351,7 +369,7 @@ void NodeEditor::RenderContextMenu()
             {
                 if (ImGui::MenuItem(colorName.c_str()))
                 {
-                    m_NodeManager.SetPinColor(m_ClickedPinID, colorData);
+                    m_NodeManager.SetPinColor(m_ClickedPinID.value(), colorData);
                 }
             }
             ImGui::EndMenu();
@@ -367,7 +385,7 @@ void NodeEditor::RenderContextMenu()
             {
                 if (ImGui::MenuItem(colorName.c_str()))
                 {
-                    m_NodeManager.SetLinkColor(m_ClickedLinkID, colorData);
+                    m_NodeManager.SetLinkColor(m_ClickedLinkID.value(), colorData);
                 }
             }
             ImGui::EndMenu();
@@ -377,7 +395,7 @@ void NodeEditor::RenderContextMenu()
 
         if (ImGui::MenuItem("Delete"))
         {
-            m_NodeManager.RemoveLink(m_ClickedLinkID);
+            m_NodeManager.RemoveLink(m_ClickedLinkID.value());
         }
 
         ImGui::EndPopup();
@@ -385,7 +403,7 @@ void NodeEditor::RenderContextMenu()
 
     if (ImGui::BeginPopupContextWindow("NodeContextMenu"))
     {
-        int clickedNodeId = m_ClickedNodeID;
+        int clickedNodeId = m_ClickedNodeID.value();
         if (ImGui::BeginMenu("Pins"))
         {
             if (ImGui::MenuItem("Add Input"))
@@ -461,4 +479,49 @@ void NodeEditor::RenderContextMenu()
 
 void NodeEditor::RenderMenuBar()
 {
+}
+
+std::optional<std::uint32_t> NodeEditor::GetHoveredNode() const
+{
+    int hoveredNode = -1;
+    ImNodes::IsNodeHovered(&hoveredNode);
+
+    if (hoveredNode == -1)
+    {
+        return std::nullopt;
+    }
+    else
+    {
+        return hoveredNode;
+    }
+}
+
+std::optional<std::uint32_t> NodeEditor::GetHoveredLink() const
+{
+    int hoveredLink = -1;
+    ImNodes::IsLinkHovered(&hoveredLink);
+
+    if (hoveredLink == -1)
+    {
+        return std::nullopt;
+    }
+    else
+    {
+        return hoveredLink;
+    }
+}
+
+std::optional<std::uint32_t> NodeEditor::GetHoveredPin() const
+{
+    int hoveredPin = -1;
+    ImNodes::IsPinHovered(&hoveredPin);
+
+    if (hoveredPin == -1)
+    {
+        return std::nullopt;
+    }
+    else
+    {
+        return hoveredPin;
+    }
 }

@@ -101,7 +101,7 @@ struct PinData
 struct NodeData
 {
     std::string Name;
-    NodePosition Position;
+    NodePosition GridPosition;
     IDSet InputIDs;
     IDSet OutputIDs;
     ColorData Colors;
