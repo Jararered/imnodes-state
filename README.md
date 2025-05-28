@@ -18,7 +18,7 @@ Part of the challenge of this project was to use the CMake function FetchContent
 
 ### Tested Environments
 - Windows 11
-- Arch Linux (Through WSL)
+- Arch Linux (Through WSL2)
 
 ### Building
 
