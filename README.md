@@ -1,8 +1,9 @@
-# Node Editor
+# ImNodes State
 
 ## What
 
 This is a small project that I started to experiment around with being able to connect and simulate differrent environments using nodes and linking them together.
+Currently, it just acts as state storage for the imgui imnodes library.
 
 ## Why
 
@@ -36,4 +37,5 @@ Due to the way GLAD generates it's files, building the project once is currently
 ```bash
 cmake --build ./build --config Debug --target all --
 ```
+
 ![Node Editor Screenshot](https://i.imgur.com/ea6joWf.png)
