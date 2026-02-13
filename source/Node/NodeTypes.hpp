@@ -54,12 +54,6 @@ struct ColorData
     unsigned int SelectedColor = IM_COL32(66, 150, 250, 255);
 };
 
-struct NodePosition
-{
-    float X = 0.0f;
-    float Y = 0.0f;
-};
-
 const std::unordered_map<std::string, ColorData> ColorDataPresets = {
     {"Default", ColorData{IM_COL32(41, 74, 122, 255), IM_COL32(50, 85, 135, 255), IM_COL32(66, 150, 250, 255)}},
     {"Red", {Color::Red, Color::LightRed, Color::LighterRed}},
@@ -101,7 +95,6 @@ struct PinData
 struct NodeData
 {
     std::string Name;
-    NodePosition GridPosition;
     IDSet InputIDs;
     IDSet OutputIDs;
     ColorData Colors;

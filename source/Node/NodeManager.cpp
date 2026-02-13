@@ -22,7 +22,7 @@ void NodeManager::CreateNode(float x, float y)
     const std::uint32_t nodeId = GetNewNodeID();
     const std::string name = "Node (ID: " + std::to_string(nodeId) + ")";
     m_NodesToRegister.push(nodeId);
-    m_NodeDataMap[nodeId] = NodeData{.Name = name, .GridPosition = {x, y}};
+    m_NodeDataMap[nodeId] = NodeData{.Name = name};
 }
 
 void NodeManager::CreateNode(const std::string& name)
@@ -36,7 +36,7 @@ void NodeManager::CreateNode(const std::string& name, float x, float y)
 {
     const std::uint32_t nodeId = GetNewNodeID();
     m_NodesToRegister.push(nodeId);
-    m_NodeDataMap[nodeId] = NodeData{.Name = name, .GridPosition = {x, y}};
+    m_NodeDataMap[nodeId] = NodeData{.Name = name};
 }
 
 void NodeManager::CreateLink(std::uint32_t pin1Id, std::uint32_t pin2Id)
@@ -321,8 +321,6 @@ void NodeManager::SaveNodeConfiguration(const std::string& filePath)
         pugi::xml_node node = root.append_child("Node");
         node.append_attribute("id") = nodeId;
         node.append_attribute("name") = nodeData.Name.c_str();
-        node.append_attribute("x") = nodeData.GridPosition.X;
-        node.append_attribute("y") = nodeData.GridPosition.Y;
     }
 
     for (const auto& [pinId, pinData] : m_PinDataMap)

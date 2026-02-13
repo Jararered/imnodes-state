@@ -123,10 +123,6 @@ void NodeEditor::RenderNodes()
 {
     for (const auto& nodeId : m_NodeManager.GetRegisteredNodes())
     {
-        const auto& nodeGridPos = m_NodeManager.GetNodeData(nodeId).GridPosition;
-        ImVec2 nodeGridPosVec = ImVec2(nodeGridPos.X, nodeGridPos.Y);
-        ImNodes::SetNodeGridSpacePos(nodeId, nodeGridPosVec);
-
         ImNodes::BeginNode(nodeId);
 
         ColorData colors = m_NodeManager.GetNodeData(nodeId).Colors;
