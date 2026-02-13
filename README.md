@@ -37,4 +37,4 @@ Note: This might not be necessary anymore in newer CMake versions.
 
 ## Node Editor Preview
 
-![Node Editor Screenshot](https://i.imgur.com/gVOHXfs.png)
+![Node Editor Screenshot](images/screenshot.png)
