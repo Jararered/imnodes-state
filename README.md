@@ -1,26 +1,21 @@
 # ImNodes State
 
-## What
-
 This is a small project that I started to experiment around with being able to connect and simulate differrent environments using nodes and linking them together.
 Currently, it just acts as state storage for the imgui imnodes library.
 
-## Why
-
 Part of the challenge of this project was to use the CMake function FetchContent to be able to handle automatically grabbing all of the dependencies to configure GLAD/GLFW/IMGUI/CATCH2, without and manual downloading/generation of files.
 
-## How
+## Requirements
 
-### Requirements
 - Python (Packages required: jinja2)
 - CMake
-- GCC
+- MSVC/GCC
 
-### Tested Environments
+## Tested Environments
 - Windows 11
-- Arch Linux (Through WSL2)
+- Linux (Arch Linux through WSL2)
 
-### Building
+## Building
 
 1. Configuring the CMake project
 
@@ -38,4 +33,8 @@ Due to the way GLAD generates it's files, building the project once is currently
 cmake --build ./build --config Debug --target all --
 ```
 
-![Node Editor Screenshot](https://i.imgur.com/ea6joWf.png)
+Note: This might not be necessary anymore in newer CMake versions.
+
+## Node Editor Preview
+
+![Node Editor Screenshot](https://i.imgur.com/gVOHXfs.png)
